@@ -11,6 +11,14 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL
 );
 """)
+c.execute("""
+CREATE TABLE IF NOT EXISTS bahan (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_sisa_makanan INTEGER NOT NULL,
+            nama VARCHAR NOT NULL,
+            FOREIGN KEY (id_sisa_makanan) REFERENCES sisa_makanan(id)
+        )
+""""")
 
 c.execute("""
 CREATE TABLE IF NOT EXISTS sisa_makanan (
