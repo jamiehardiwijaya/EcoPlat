@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL
 );
 """)
+
 c.execute("""
 CREATE TABLE IF NOT EXISTS bahan (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
