@@ -1,10 +1,14 @@
-from db import get_db_connection
+from db import execute_query, fetch_all
 
-def get_history(user_id):
-    con = get_db_connection()
-    cur = con.cursor()
-    cur.execute("SELECT * FROM user_history WHERE user_id = ?", (user_id,))
-    result = cur.fetchall()
-    con.close()
-    return result
+def add_history(user_id, sisa_makanan_id, tanggal_kadaluwarsa, jenis_makanan, jumlah, status, nama):
+    query = """
+        INSERT INTO user_history 
+        (user_id, sisa_makanan_id, tanggal_kadaluwarsa, jenis_makanan, jumlah, status, nama)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """
+    execute_query(query, (user_id, sisa_makanan_id, tanggal_kadaluwarsa, jenis_makanan, jumlah, status, nama))
+
+def get_history_by_user(user_id):
+    query = "SELECT * FROM user_history WHERE user_id = ?"
+    return fetch_all(query, (user_id,))
 
