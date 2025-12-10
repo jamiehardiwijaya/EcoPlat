@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-db = "EcoPlat.db"
+db = "ecoplat.db"
 base_dir = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(db)
 
@@ -15,7 +15,9 @@ def execute_query(query, params=()):
     c = con.cursor()
     c.execute(query, params)
     con.commit()
+    last_id = c.lastrowid
     con.close()
+    return last_id
 
 def fetch_one(query, params=()):
     con = get_db_connection()
@@ -23,13 +25,13 @@ def fetch_one(query, params=()):
     c.execute(query, params)
     result = c.fetchone()
     con.close()
-    return result
+    return dict(result) if result else None
 
 def fetch_all(query, params=()):
     con = get_db_connection()
     c = con.cursor()
     c.execute(query, params)
-    result = c.fetchall()
+    results = c.fetchall()
     con.close()
-    return result
+    return [dict(result) for result in results]
 
