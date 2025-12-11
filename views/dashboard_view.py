@@ -1,6 +1,6 @@
 # views/dashboard_view.py
 from state import AppState
-# from views.makanan_view import show_makanan_menu
+from views.makanan_view import makanan_menu
 # from views.resep_view import show_resep_menu
 # from views.profil_view import show_profil
 
@@ -29,7 +29,7 @@ def show_dashboard():
     if choice == "1":
         show_statistics()
     elif choice == "2":
-        # show_makanan_menu()
+        makanan_menu()
         pass
     elif choice == "3":
         # show_resep_menu()
