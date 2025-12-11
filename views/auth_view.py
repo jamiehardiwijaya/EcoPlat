@@ -37,13 +37,13 @@ def handle_login():
     result = AuthService.login_user(email, password)
     
     if result["success"]:
-        result["message"]
-        input("Tekan Enter untuk melanjutkan...")
+        print(result["message"])
+        input("\nTekan Enter untuk melanjutkan...")
         # Pindah ke main app
         show_main_app()
     else:
-        result["message"]
-        input("Tekan Enter untuk kembali...")
+        print(result["message"])
+        input("\nTekan Enter untuk kembali...")
 
 def handle_register():
     print("\n" + "-" * 30)
@@ -53,11 +53,11 @@ def handle_register():
     email = input("Email: ").strip()
     password = input("Password: ").strip()
     confirm_password = input("Konfirmasi password: ").strip()
-    
+     
     result = AuthService.register_user(nama, email, password, confirm_password)
     
     if result["success"]:
-        result["message"]
+        print(result["message"])
     else:
-        result["message"]
-        input("Tekan Enter untuk kembali...")
+        print(result["message"])
+        input("\nTekan Enter untuk kembali...")
