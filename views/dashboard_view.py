@@ -5,8 +5,10 @@ from views.resep_view import resep_menu
 # from views.rekomendasi_view import tampilkan_rekomendasi
 # from views.profil_view import show_profil
 
+from utils.helper import Utils
+
 def show_main_app():
-    """Menu utama setelah login"""
+    """Menu utama setelah logibn"""
     while AppState.is_logged_in():
         show_dashboard()
 
@@ -19,12 +21,21 @@ def show_dashboard():
     print("=" * 50)
     
     print("\n=== MENU UTAMA ===")
+<<<<<<< HEAD
     print("1. 🥦 Kelola Makanan (Inventaris)")
     print("2. 📋 Kelola Resep")
     print("3. ⭐ Rekomendasi Resep")
     print("4. 🕘 Riwayat Konsumsi")
     print("5. 👤 Profil Saya")
     print("6. 🚪 Logout")
+=======
+    print("1. 📊 Dashboard & Statistik")
+    print("2. 🥦 Kelola Makanan (Inventaris)")
+    print("3. 📋 Lihat Resep & Rekomendasi")
+    print("4. 👤 Profil Saya")
+    print("5. 🚪 Logout")
+    print("6. Keluar")
+>>>>>>> 2d98fb5 (fix: stylishing authentication view)
     
     choice = input("\nPilih menu [1-6]: ").strip()
     
@@ -43,6 +54,10 @@ def show_dashboard():
         pass
     elif choice == "6":
         handle_logout()
+    elif choice == "6":
+        if Utils.confirm_action("Yakin ingin keluar?"):
+            print("\n👋 Terima kasih telah menggunakan EcoPlat!")
+            exit()
     else:
         print("Pilihan tidak valid!")
 

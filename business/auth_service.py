@@ -20,7 +20,7 @@ class AuthService:
         
         try:
             id_user = UserRepository.add_user(nama, email, password)
-            return {"success": True, "message": "Registrasi berhasil! Silakan login.", "user_id": id_user}
+            return {"success": True, "message": "Registrasi berhasil! Silakan login terlebih dahulu.", "user_id": id_user}
         except Exception as e:
             return {"success": False, "message": f"Terjadi kesalahan: {e}"}
         

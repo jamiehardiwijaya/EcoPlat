@@ -1,14 +1,13 @@
 # main.py
 import sys
 import os
+from utils.helper import Utils
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from views.auth_view import show_auth_menu
 
 def main():
-    print("=" * 40)
-    print("    Ecoplat - Your Eco-Friendly Platform    ")
-    print("=" * 40)
+    Utils.print_header("Food Waste Manager")
     
     while True:
         show_auth_menu()
