@@ -3,6 +3,7 @@ import sys
 import time
 import maskpass  # Untuk input password yang tersembunyi
 from typing import Optional
+from state import AppState
 
 class Utils:
     """Utility class untuk formatting CLI"""
@@ -14,8 +15,11 @@ class Utils:
     @staticmethod
     def print_header(title):
         Utils.clear_screen()
+        user_name = AppState.get_user_name()
         print("=" * 60)
         print(f"    🌱 ECOPLAT - {title}")
+        if AppState.is_logged_in():
+            print(f"    User: {user_name}")
         print("=" * 60)
     
     @staticmethod
@@ -145,3 +149,47 @@ class Utils:
             time.sleep(0.1)
             i += 1
         print(f"\r{message} ‼️", " " * 20)  # Clear line
+        
+    def pilih_menu(menu_items):
+        """
+        Menampilkan daftar menu secara dinamis dan meminta input pilihan yang valid
+        dari pengguna.
+
+        Args:
+            menu_items (list): List berisi string item menu.
+
+        Returns:
+            int: Angka pilihan menu yang valid (1, 2, 3, dst.).
+        """
+    
+        # 1. Tampilkan Header
+        print("\n=== MENU UTAMA ===")
+
+        # 2. Mencetak Menu Secara Dinamis
+        for index, item in enumerate(menu_items, 1):
+            print(f"{index}. {item}")
+
+        # 3. Hitung Jumlah Menu dan Buat Rentang Pilihan
+        total_items = len(menu_items) 
+        pilihan_range = f"1-{total_items}" 
+
+        # 4. Ambil Input dengan Loop Pengecekan Validitas
+        while True:
+            choice = input(f"\nPilih menu [{pilihan_range}]: ").strip()
+            
+            # Pengecekan Input
+            if choice.isdigit():
+                choice_num = int(choice)
+                
+                # Pastikan input berada dalam rentang yang benar
+                if 1 <= choice_num <= total_items:
+                    return choice_num # Mengembalikan angka pilihan yang valid
+                else:
+                    print(f"❌ Pilihan tidak valid. Silakan masukkan angka antara 1 sampai {total_items}.")
+            else:
+                print("❌ Masukkan hanya angka.")
+                
+    def greeting_user():
+        """Menampilkan pesan sapaan kepada pengguna yang telah login."""
+        user_name = AppState.get_user_name() or "Guest"
+        print(f"\nSelamat datang di EcoPlat, {user_name}! 🤩")
