@@ -19,15 +19,15 @@ class MakananRepository:
     
     @staticmethod
     def get_by_id(id_sisa):
-        query = "SELECT * FROM sisa_makanan WHERE id_sisa = ?"
+        query = "SELECT * FROM sisa_makanan WHERE id = ?"
         return fetch_one(query, (id_sisa,))
     
     @staticmethod
     def update_makanan(id_sisa, nama, jumlah, tanggal_kadaluarsa, kategori):
         query = """
             UPDATE sisa_makanan
-            SET nama = ?, jumlah = ?, tanggal_kadaluarsa = ?, kategori = ?
-            WHERE id_sisa = ?
+            SET nama_makanan = ?, jumlah = ?, tanggal_kadaluarsa = ?, kategori = ?
+            WHERE id = ?
         """
         return execute_query(query, (
             nama, jumlah, tanggal_kadaluarsa, kategori, id_sisa
