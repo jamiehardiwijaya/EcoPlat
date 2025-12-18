@@ -32,17 +32,17 @@ def show_dashboard():
 
     choice = Utils.pilih_menu(menu)
     
-    if choice == "1":
+    if choice == 1:
         makanan_menu()
-    elif choice == "2":
+    elif choice == 2:
         resep_menu()
-    elif choice == "3":
+    elif choice == 3:
         pass
-    elif choice == "4":
+    elif choice == 4:
         pass
-    elif choice == "5":
+    elif choice == 5:
         show_profil()
-    elif choice == "6":
+    elif choice == 6:
         handle_logout()
     elif choice == 7:
         if Utils.confirm_action("Yakin ingin keluar?"):
