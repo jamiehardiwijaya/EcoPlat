@@ -17,10 +17,8 @@ def init_db():
     c.execute("""
     CREATE TABLE IF NOT EXISTS bahan (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                id_sisa_makanan INTEGER NOT NULL,
-                nama VARCHAR NOT NULL,
-                FOREIGN KEY (id_sisa_makanan) REFERENCES sisa_makanan(id)
-            )
+                nama VARCHAR NOT NULL
+            );
     """)
 
     c.execute("""
@@ -46,16 +44,6 @@ def init_db():
     """)
 
     c.execute("""
-    CREATE TABLE IF NOT EXISTS rekomendasi_resep (
-        makanan_id INTEGER,
-        resep_id INTEGER,
-        PRIMARY KEY (makanan_id, resep_id),
-        FOREIGN KEY (makanan_id) REFERENCES sisa_makanan (id),
-        FOREIGN KEY (resep_id) REFERENCES resep (id)
-    );
-    """)
-
-    c.execute("""
     CREATE TABLE IF NOT EXISTS user_history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             use  r_id INTEGER NOT NULL,
@@ -69,6 +57,16 @@ def init_db():
             FOREIGN KEY(user_id) REFERENCES user(id),
             FOREIGN KEY(sisa_makanan_id) REFERENCES sisa_makanan(id)
         )
+    """)
+
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS bahan_resep (
+        resep_id INTEGER,
+        bahan_id INTEGER,
+        PRIMARY KEY (resep_id, bahan_id),
+        FOREIGN KEY (resep_id) REFERENCES resep (id),
+        FOREIGN KEY (bahan_id) REFERENCES bahan (id)
+    );
     """)
 
     con.commit()
