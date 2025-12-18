@@ -21,3 +21,7 @@ class AppState:
     def get_user_name(cls):
         return cls.current_user['nama'] if cls.current_user else None
     
+    @classmethod
+    def get_user_email(cls):
+        return cls.current_user['email'] if cls.current_user else None
+    

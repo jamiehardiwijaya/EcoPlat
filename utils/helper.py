@@ -13,12 +13,12 @@ class Utils:
         os.system('cls' if os.name == 'nt' else 'clear')
     
     @staticmethod
-    def print_header(title):
+    def print_header(title, show_user=True):
         Utils.clear_screen()
         user_name = AppState.get_user_name()
         print("=" * 60)
         print(f"    🌱 ECOPLAT - {title}")
-        if AppState.is_logged_in():
+        if AppState.is_logged_in() and show_user:
             print(f"    User: {user_name}")
         print("=" * 60)
     

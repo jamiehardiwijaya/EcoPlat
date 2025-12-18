@@ -13,4 +13,4 @@ def show_statistics():
     # - Total nilai ekonomis
     
     print("Fitur statistik akan tersedia segera...")
-    input("\nTekan Enter untuk kembali ke menu utama...")
+    input("\nTekan Enter untuk kembali ke dashboard utama...")
