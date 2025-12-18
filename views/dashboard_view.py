@@ -120,7 +120,7 @@ def show_expiration_notifications_first():
                     print()
 
             if makanan_hampir_kadaluarsa:
-                print("⚠️⚠️⚠️ MAKANAN HAMPIR KADALUARSA ⚠️⚠️⚠️")
+                print("⚠️ ⚠️ ⚠️ MAKANAN HAMPIR KADALUARSA ⚠️ ⚠️ ⚠️")
                 print("-" * 40)
                 for makanan in makanan_hampir_kadaluarsa:
                     if makanan['hari_tersisa'] == 0:
