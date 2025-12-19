@@ -35,3 +35,13 @@ class ResepRepository:
         WHERE id = ? AND user_id = ?
         """
         execute_query(query, (resep_id, user_id))
+
+    @staticmethod
+    def get_resep_by_bahan(bahan_id):
+        query = """
+        SELECT r.id, r.nama_resep, r.deskripsi
+        FROM resep r
+        JOIN bahan_resep br ON r.id = br.resep_id
+        WHERE br.bahan_id = ?
+        """
+        return fetch_all(query, (bahan_id,))
