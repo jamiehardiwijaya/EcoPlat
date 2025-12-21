@@ -1,11 +1,11 @@
 from state import AppState
 from business.auth_service import AuthService
 from views.makanan_view import makanan_menu
-from views.statistik_view import show_statistics
 from utils.helper import Utils
 from views.profil_view import show_profil
 from views.resep_view import resep_menu
 from views.history_view import history_menu
+from views.rekomendasi_view import tampilkan_rekomendasi
 
 def show_main_app():
     """Menu utama setelah login"""
@@ -43,7 +43,7 @@ def show_dashboard():
     elif choice == 2:
         resep_menu()
     elif choice == 3:
-        show_rekomendasi_menu()
+        tampilkan_rekomendasi()
     elif choice == 4:
         history_menu()
     elif choice == 5:
@@ -157,9 +157,3 @@ def handle_logout():
         Utils.pause_and_clear()
         return True  
     return False
-
-def show_rekomendasi_menu():
-    Utils.print_header("⭐ Rekomendasi Resep")
-    print("Fitur rekomendasi resep sedang dalam pengembangan...")
-    print("Akan segera hadir dengan AI-powered recommendations!")
-    Utils.pause_and_back()
