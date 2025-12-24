@@ -39,9 +39,14 @@ def tambah_makanan():
     while True:
         Utils.clear_screen()
         Utils.print_header("➕ TAMBAH MAKANAN")
+        print("Masukkan 0 pada inputan apapun untuk kembali.\n")
 
         nama = input("Nama makanan : ").strip()
+        if nama == "0":
+            return
         jumlah = input("Jumlah       : ").strip()
+        if jumlah == "0":
+            return
 
         if not nama or not jumlah:
             Utils.print_error("Nama dan/atau jumlah tidak boleh kosong!")
@@ -50,6 +55,8 @@ def tambah_makanan():
 
         while True:
             tanggal = input("Tanggal kadaluarsa (YYYY-MM-DD): ").strip()
+            if tanggal == "0":
+                return
             try:
                 exp_date = datetime.strptime(tanggal, "%Y-%m-%d")
                 days_left = (exp_date.date() - datetime.now().date()).days
@@ -65,6 +72,8 @@ def tambah_makanan():
                 print("❌ Format tanggal salah! Gunakan YYYY-MM-DD")
 
         kategori = input("Kategori      : ").strip()
+        if kategori == "0":
+            return
         if not kategori:
             Utils.print_error("Kategori tidak boleh kosong!")
             Utils.pause_and_back()
