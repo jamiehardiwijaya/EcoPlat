@@ -142,7 +142,21 @@ def update_makanan():
         print("\n(Kosongkan jika tidak ingin mengubah)")
         nama = input(f"Nama [{target['nama_makanan']}]: ").strip() or target["nama_makanan"]
         jumlah = input(f"Jumlah [{target['jumlah']}]: ").strip() or target["jumlah"]
-        tanggal = input(f"Tanggal [{target['tanggal_kadaluarsa']}]: ").strip() or target["tanggal_kadaluarsa"]
+        while True:
+            tanggal = input(f"Tanggal [{target['tanggal_kadaluarsa']}]: ").strip() or target["tanggal_kadaluarsa"]
+            try:
+                exp_date = datetime.strptime(tanggal, "%Y-%m-%d")
+                days_left = (exp_date.date() - datetime.now().date()).days
+
+                if days_left < 0:
+                    print(f"⚠️  Makanan sudah kadaluarsa {abs(days_left)} hari.")
+                    if input("Tetap tambahkan? (y/n): ").lower() != "y":
+                        continue
+                elif days_left <= 3:
+                    print(f"⚠️  Makanan akan kadaluarsa dalam {days_left} hari.")
+                break
+            except ValueError:
+                print("❌ Format tanggal salah! Gunakan YYYY-MM-DD")
         kategori = input(f"Kategori [{target['kategori']}]: ").strip() or target["kategori"]
 
         if not Utils.confirm_action("Simpan perubahan?"):
