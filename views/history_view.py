@@ -137,7 +137,6 @@ def lihat_histori_periode():
             start_date = input("Tanggal mulai: ").strip()
             end_date = input("Tanggal selesai: ").strip()
             
- 
             datetime.strptime(start_date, '%Y-%m-%d')
             datetime.strptime(end_date, '%Y-%m-%d')
             
@@ -176,6 +175,34 @@ def lihat_histori_periode():
     
     Utils.pause_and_back()
 
+def calculate_efficiency_stats(statistik):
+    """Menghitung statistik efisiensi"""
+    if not statistik.get("detail"):
+        return {"persentase_digunakan": 0, "persentase_terbuang": 0}
+    
+    total_items = statistik.get("total_item", 0)
+    if total_items == 0:
+        return {"persentase_digunakan": 0, "persentase_terbuang": 0}
+    
+    # Item digunakan
+    used_items = 0
+    for status in ['digunakan', 'dikonsumsi']:
+        if status in statistik["detail"]:
+            used_items += statistik["detail"][status].get("total_item", 0)
+    
+    # Item terbuang
+    wasted_items = 0
+    for status in ['terbuang', 'kadaluarsa']:
+        if status in statistik["detail"]:
+            wasted_items += statistik["detail"][status].get("total_item", 0)
+    
+    return {
+        "persentase_digunakan": (used_items / total_items) * 100,
+        "persentase_terbuang": (wasted_items / total_items) * 100,
+        "used_items": used_items,
+        "wasted_items": wasted_items
+    }
+
 def lihat_statistik_lengkap():
     """Menampilkan statistik histori lengkap"""
     Utils.print_header("📊 Statistik & Analisis Histori")
@@ -187,7 +214,6 @@ def lihat_statistik_lengkap():
     if not statistik.get("detail"):
         Utils.print_warning("Belum ada data statistik.")
     else:
-
         print(f"\n📈 OVERVIEW STATISTIK")
         print("═" * 50)
         print(f"Total Aktivitas  : {statistik['total_aktivitas']}")
@@ -198,7 +224,14 @@ def lihat_statistik_lengkap():
         print(f"\n📋 DETAIL PER STATUS")
         print("═" * 50)
         
-        for status, data in statistik['detail'].items():
+        # Urutkan berdasarkan jumlah aktivitas terbanyak
+        sorted_status = sorted(
+            statistik['detail'].items(), 
+            key=lambda x: x[1]['jumlah_aktivitas'], 
+            reverse=True
+        )
+        
+        for status, data in sorted_status:
             status_icon = get_status_icon(status)
             persentase = (data['jumlah_aktivitas'] / statistik['total_aktivitas'] * 100) if statistik['total_aktivitas'] > 0 else 0
             
@@ -215,26 +248,43 @@ def lihat_statistik_lengkap():
         print(f"\n🔍 ANALISIS LANJUT")
         print("═" * 50)
         
-        if 'analisis' in statistik:
-            analisis = statistik['analisis']
-            print(f"🍽️  Makanan Digunakan   : {analisis.get('total_digunakan', 0)}")
-            print(f"🗑️  Makanan Terbuang     : {analisis.get('total_terbuang', 0)}")
-            
-            if 'persentase_digunakan' in analisis:
-                print(f"✅ Efisiensi Penggunaan : {analisis['persentase_digunakan']:.1f}%")
-            if 'persentase_terbuang' in analisis:
-                print(f"⚠️  Tingkat Pemborosan   : {analisis['persentase_terbuang']:.1f}%")
+        efficiency_stats = calculate_efficiency_stats(statistik)
+        
+        print(f"🍽️  Makanan Digunakan   : {statistik['analisis'].get('total_digunakan', 0)} aktivitas")
+        print(f"🗑️  Makanan Terbuang     : {statistik['analisis'].get('total_terbuang', 0)} aktivitas")
+        print(f"📦 Total Item Digunakan : {efficiency_stats['used_items']} item")
+        print(f"🗑️  Total Item Terbuang  : {efficiency_stats['wasted_items']} item")
+        
+        if statistik['total_item'] > 0:
+            print(f"✅ Efisiensi Penggunaan : {efficiency_stats['persentase_digunakan']:.1f}%")
+            print(f"⚠️  Tingkat Pemborosan   : {efficiency_stats['persentase_terbuang']:.1f}%")
         
         print(f"\n💡 REKOMENDASI")
         print("═" * 50)
         
-        if statistik.get('analisis', {}).get('persentase_terbuang', 0) > 20:
-            print("• Tingkat pemborosan tinggi (>20%). Perhatikan tanggal kadaluarsa!")
-            print("• Gunakan fitur 'Rekomendasi Resep' untuk menggunakan bahan yang hampir kadaluarsa.")
-        else:
-            print("• Tingkat pemborosan rendah. Pertahankan! 💚")
+        # Berikan rekomendasi berdasarkan data
+        total_terbuang = efficiency_stats['wasted_items']
+        total_semua = statistik['total_item']
         
-        print("• Catat semua penggunaan makanan untuk analisis yang lebih akurat.")
+        if total_semua > 0:
+            persentase_terbuang = (total_terbuang / total_semua) * 100
+            
+            if persentase_terbuang > 20:
+                print("• ⚠️  Tingkat pemborosan tinggi (>20%). Perhatikan tanggal kadaluarsa!")
+                print("• 🍳 Gunakan fitur 'Rekomendasi Resep' untuk bahan hampir kadaluarsa")
+                print("• 📅 Setel pengingat untuk memeriksa makanan secara berkala")
+            elif persentase_terbuang > 5:
+                print("• 👍 Tingkat pemborosan sedang. Bisa ditingkatkan!")
+                print("• 🗓️  Rencanakan menu mingguan untuk mengurangi pemborosan")
+            else:
+                print("• 🎉 Tingkat pemborosan rendah. Pertahankan! 💚")
+                print("• 📊 Lanjutkan pencatatan untuk menjaga konsistensi")
+        else:
+            print("• 🎉 Tidak ada makanan terbuang! Excellent!")
+            print("• 💪 Pertahankan kebiasaan baik ini")
+        
+        print("• 📱 Gunakan notifikasi untuk pengingat kadaluarsa")
+        print("• 🛒 Beli bahan sesuai kebutuhan, hindari penimbunan")
     
     Utils.pause_and_back()
 
@@ -288,11 +338,13 @@ def lihat_makanan_terbuang():
         
         total_nilai = 0
         for i, makanan in enumerate(wasted_food, start=1):
-            nilai = makanan['jumlah'] * 5000  
+            nilai = makanan['jumlah'] * 5000  # Estimasi nilai per item
             total_nilai += nilai
             
             print(f"{i}. {makanan['nama']}")
             print(f"   Jumlah: {makanan['jumlah']} | Kategori: {makanan['jenis_makanan']}")
+            if makanan.get('tanggal_kadaluwarsa'):
+                print(f"   Kadaluarsa: {makanan['tanggal_kadaluwarsa']}")
             print(f"   Waktu: {makanan['timestamp'][:16]}")
             print(f"   Estimasi nilai: Rp {nilai:,}")
             print()
@@ -409,13 +461,12 @@ def lihat_ringkasan_bulanan():
         year_month = bulan_sekarang
         label = "Bulan Ini"
     elif pilihan == "2":
-
         last_month = datetime.now() - timedelta(days=30)
         year_month = last_month.strftime('%Y-%m')
         label = "Bulan Sebelumnya"
     elif pilihan == "3":
         year_month = input("Masukkan tahun-bulan (YYYY-MM): ").strip()
-
+        
         try:
             datetime.strptime(year_month + "-01", '%Y-%m-%d')
             label = f"Bulan {datetime.strptime(year_month + '-01', '%Y-%m-%d').strftime('%B %Y')}"
@@ -540,7 +591,7 @@ def get_status_message(status):
         'digunakan': 'Makanan digunakan untuk memasak/membuat sesuatu.',
         'dikonsumsi': 'Makanan langsung dikonsumsi.',
         'kadaluarsa': 'Makanan telah melewati tanggal kadaluarsa.',
-        'terbuang': 'Makanan terbuang sia-sia.',
+        'terbuang': 'Makanan terbuang sia-sia karena tidak digunakan sebelum kadaluarsa.',
         'diupdate': 'Informasi makanan diperbarui.',
     }
     
