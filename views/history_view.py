@@ -26,7 +26,7 @@ def get_status_icon(status):
 def history_menu():
     """Menu utama histori"""
     while True:
-        Utils.print_header("📜 Histori Aktivitas", show_user=True)
+        Utils.print_header("📜 Histori Aktivitas", show_user=False)
         
         menu = [
             "📋 Lihat Semua Histori",

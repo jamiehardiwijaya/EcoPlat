@@ -6,14 +6,17 @@ class HistoryRepository:
     @staticmethod
     def tambah_history(user_id, sisa_makanan_id, tanggal_kadaluwarsa, 
                       jenis_makanan, jumlah, status, nama):
+        timestamp_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
         query = """
             INSERT INTO user_history 
-            (user_id, sisa_makanan_id, tanggal_kadaluwarsa, jenis_makanan, jumlah, status, nama)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (user_id, sisa_makanan_id, tanggal_kadaluwarsa, jenis_makanan, 
+             jumlah, status, nama, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """
         return execute_query(query, (
             user_id, sisa_makanan_id, tanggal_kadaluwarsa, 
-            jenis_makanan, jumlah, status, nama
+            jenis_makanan, jumlah, status, nama, timestamp_now
         ))
     
     @staticmethod

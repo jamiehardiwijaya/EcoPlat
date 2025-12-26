@@ -45,18 +45,18 @@ def init_db():
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS user_history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            use  r_id INTEGER NOT NULL,
-            sisa_makanan_id INTEGER,
-            tanggal_kadaluwarsa DATE,
-            jenis_makanan TEXT,
-            jumlah INTEGER,
-            status TEXT,
-            nama TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(user_id) REFERENCES user(id),
-            FOREIGN KEY(sisa_makanan_id) REFERENCES sisa_makanan(id)
-        )
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        sisa_makanan_id INTEGER,
+        tanggal_kadaluwarsa DATE,
+        jenis_makanan TEXT,
+        jumlah INTEGER,
+        status TEXT,
+        nama TEXT,
+        timestamp DATETIME,  -- HAPUS DEFAULT CURRENT_TIMESTAMP
+        FOREIGN KEY(user_id) REFERENCES users(id),
+        FOREIGN KEY(sisa_makanan_id) REFERENCES sisa_makanan(id)
+    )
     """)
 
     c.execute("""
