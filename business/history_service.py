@@ -38,13 +38,22 @@ class HistoryService:
             return {"success": False, "message": "Makanan tidak ditemukan"}
         
         try:
+            status_messages = {
+                "digunakan": "digunakan",
+                "terbuang": "terbuang",
+                "kadaluarsa": "kadaluarsa",
+                "dihapus": "dihapus"
+            }
+            
+            status = status_messages.get(alasan, "dihapus")
+            
             HistoryRepository.tambah_history(
                 user_id=user_id,
                 sisa_makanan_id=makanan_id,
                 tanggal_kadaluwarsa=makanan['tanggal_kadaluarsa'],
                 jenis_makanan=makanan['kategori'],
                 jumlah=makanan['jumlah'],
-                status=alasan,
+                status=status,
                 nama=makanan['nama_makanan']
             )
             return {"success": True}
@@ -54,7 +63,7 @@ class HistoryService:
     @staticmethod
     def record_food_expired(makanan_id):
         """Mencatat makanan kadaluarsa ke histori"""
-        return HistoryService.record_food_deletion(makanan_id, "kadaluarsa")
+        return HistoryService.record_food_deletion(makanan_id, "terbuang") 
     
     @staticmethod
     def record_food_used(makanan_id):
@@ -64,7 +73,12 @@ class HistoryService:
     @staticmethod
     def record_food_consumed(makanan_id):
         """Mencatat makanan dikonsumsi ke histori"""
-        return HistoryService.record_food_deletion(makanan_id, "dikonsumsi")
+        return HistoryService.record_food_deletion(makanan_id, "digunakan") 
+    
+    @staticmethod
+    def record_food_wasted(makanan_id):
+        """Mencatat makanan terbuang ke histori"""
+        return HistoryService.record_food_deletion(makanan_id, "terbuang")
     
     @staticmethod
     def record_food_update(makanan_id, perubahan):

@@ -26,7 +26,7 @@ class ExpirationService:
                 
                 if exp_date < today:
                     if record_to_history:
-                        HistoryService.record_food_expired(makanan['id'])
+                        HistoryService.record_food_deletion(makanan['id'], "terbuang")
                     
                     expired_foods.append({
                         'id': makanan['id'],
@@ -37,7 +37,7 @@ class ExpirationService:
                     })
                     
             except (ValueError, TypeError):
-                continue 
+                continue
         
         return expired_foods
     

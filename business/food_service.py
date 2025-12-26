@@ -59,9 +59,32 @@ class FoodService:
     @staticmethod
     def hapus_makanan(makanan_id):
         try:
-            HistoryService.record_food_deletion(makanan_id)
+            makanan = MakananRepository.get_by_id(makanan_id)
+            if not makanan:
+                return {"success": False, "message": "Makanan tidak ditemukan!"}
+            
+            from datetime import datetime
+            today = datetime.now().date()
+            
+            try:
+                exp_date = datetime.strptime(makanan['tanggal_kadaluarsa'], '%Y-%m-%d').date()
+                
+                if exp_date >= today:
+                    alasan = "digunakan"
+                    message = "Makanan berhasil dihapus (dicatat sebagai digunakan)!"
+                else:
+                    alasan = "terbuang"
+                    message = "Makanan berhasil dihapus (dicatat sebagai terbuang)!"
+                    
+            except (ValueError, TypeError):
+                alasan = "terbuang"
+                message = "Makanan berhasil dihapus (dicatat sebagai terbuang)!"
+            
+            HistoryService.record_food_deletion(makanan_id, alasan)
             MakananRepository.delete_makanan(makanan_id)
-            return {"success": True, "message": "Makanan berhasil dihapus!"}
+            
+            return {"success": True, "message": message}
+            
         except Exception as e:
             return {"success": False, "message": f"Terjadi kesalahan: {e}"}
 

@@ -13,10 +13,10 @@ def get_status_icon(status):
         'dikonsumsi': '🍽️',
         'kadaluarsa': '⚠️',
         'diupdate': '✏️',
-        'terbuang': '🚮',
+        'terbuang': '🚮',  
         'disimpan': '💾',
     }
-
+    
     status_lower = status.lower()
     for key, icon in icon_map.items():
         if key in status_lower:
@@ -541,6 +541,25 @@ def get_status_message(status):
         'dikonsumsi': 'Makanan langsung dikonsumsi.',
         'kadaluarsa': 'Makanan telah melewati tanggal kadaluarsa.',
         'terbuang': 'Makanan terbuang sia-sia.',
+        'diupdate': 'Informasi makanan diperbarui.',
+    }
+    
+    status_lower = status.lower()
+    for key, message in messages.items():
+        if key in status_lower:
+            return message
+    
+    return ""
+
+def get_status_message(status):
+    """Mengembalikan pesan berdasarkan status"""
+    messages = {
+        'ditambahkan': 'Makanan baru ditambahkan ke inventaris.',
+        'dihapus': 'Makanan dihapus dari inventaris.',
+        'digunakan': 'Makanan digunakan untuk memasak/membuat sesuatu.',
+        'dikonsumsi': 'Makanan langsung dikonsumsi.',
+        'kadaluarsa': 'Makanan telah melewati tanggal kadaluarsa.',
+        'terbuang': 'Makanan terbuang sia-sia karena tidak digunakan sebelum kadaluarsa.', 
         'diupdate': 'Informasi makanan diperbarui.',
     }
     
