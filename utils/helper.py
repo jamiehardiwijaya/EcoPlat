@@ -13,8 +13,9 @@ class Utils:
         os.system('cls' if os.name == 'nt' else 'clear')
     
     @staticmethod
-    def print_header(title, show_user=True):
-        Utils.clear_screen()
+    def print_header(title, show_user=True, clear=True):
+        if clear:
+            Utils.clear_screen()
         user_name = AppState.get_user_name()
         print("=" * 60)
         print(f"    🌱 ECOPLAT - {title}")
