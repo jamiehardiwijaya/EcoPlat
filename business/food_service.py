@@ -59,10 +59,12 @@ class FoodService:
     @staticmethod
     def hapus_makanan(makanan_id):
         try:
+            # Dapatkan data makanan sebelum dihapus
             makanan = MakananRepository.get_by_id(makanan_id)
             if not makanan:
                 return {"success": False, "message": "Makanan tidak ditemukan!"}
             
+            # Tentukan status berdasarkan tanggal kadaluarsa
             from datetime import datetime
             today = datetime.now().date()
             
@@ -70,17 +72,23 @@ class FoodService:
                 exp_date = datetime.strptime(makanan['tanggal_kadaluarsa'], '%Y-%m-%d').date()
                 
                 if exp_date >= today:
+                    # Dihapus sebelum/saat tanggal kadaluarsa → dianggap digunakan
                     alasan = "digunakan"
                     message = "Makanan berhasil dihapus (dicatat sebagai digunakan)!"
                 else:
+                    # Dihapus setelah tanggal kadaluarsa → dianggap terbuang
                     alasan = "terbuang"
                     message = "Makanan berhasil dihapus (dicatat sebagai terbuang)!"
                     
             except (ValueError, TypeError):
+                # Jika format tanggal tidak valid, anggap sebagai terbuang
                 alasan = "terbuang"
                 message = "Makanan berhasil dihapus (dicatat sebagai terbuang)!"
             
+            # Catat penghapusan dengan status yang sesuai
             HistoryService.record_food_deletion(makanan_id, alasan)
+            
+            # Hapus dari database
             MakananRepository.delete_makanan(makanan_id)
             
             return {"success": True, "message": message}

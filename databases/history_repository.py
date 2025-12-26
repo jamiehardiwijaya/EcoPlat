@@ -111,7 +111,12 @@ class HistoryRepository:
     @staticmethod
     def get_wasted_food_history(user_id):
         """Mendapatkan histori makanan yang terbuang"""
-        return HistoryRepository.get_history_by_status(user_id, "kadaluarsa")
+        query = """
+            SELECT * FROM user_history 
+            WHERE user_id = ? AND status = 'terbuang'
+            ORDER BY timestamp DESC
+        """
+        return fetch_all(query, (user_id,))
     
     @staticmethod
     def get_food_usage_history(user_id):

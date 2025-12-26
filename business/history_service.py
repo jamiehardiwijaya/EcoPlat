@@ -28,7 +28,7 @@ class HistoryService:
     
     @staticmethod
     def record_food_deletion(makanan_id, alasan="dihapus"):
-        """Mencatat penghapusan makanan ke histori"""
+        """Mencatat penghapusan makanan ke histori dengan status yang sesuai"""
         user_id = AppState.get_user_id()
         if not user_id:
             return {"success": False, "message": "User tidak login"}
@@ -38,6 +38,7 @@ class HistoryService:
             return {"success": False, "message": "Makanan tidak ditemukan"}
         
         try:
+            # Tentukan pesan status yang tepat
             status_messages = {
                 "digunakan": "digunakan",
                 "terbuang": "terbuang",
@@ -63,7 +64,7 @@ class HistoryService:
     @staticmethod
     def record_food_expired(makanan_id):
         """Mencatat makanan kadaluarsa ke histori"""
-        return HistoryService.record_food_deletion(makanan_id, "terbuang") 
+        return HistoryService.record_food_deletion(makanan_id, "terbuang")
     
     @staticmethod
     def record_food_used(makanan_id):
@@ -73,7 +74,7 @@ class HistoryService:
     @staticmethod
     def record_food_consumed(makanan_id):
         """Mencatat makanan dikonsumsi ke histori"""
-        return HistoryService.record_food_deletion(makanan_id, "digunakan") 
+        return HistoryService.record_food_deletion(makanan_id, "digunakan")
     
     @staticmethod
     def record_food_wasted(makanan_id):
