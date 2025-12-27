@@ -184,13 +184,11 @@ def calculate_efficiency_stats(statistik):
     if total_items == 0:
         return {"persentase_digunakan": 0, "persentase_terbuang": 0}
     
-    # Item digunakan
     used_items = 0
     for status in ['digunakan', 'dikonsumsi']:
         if status in statistik["detail"]:
             used_items += statistik["detail"][status].get("total_item", 0)
     
-    # Item terbuang
     wasted_items = 0
     for status in ['terbuang', 'kadaluarsa']:
         if status in statistik["detail"]:
@@ -224,14 +222,20 @@ def lihat_statistik_lengkap():
         print(f"\n📋 DETAIL PER STATUS")
         print("═" * 50)
         
-        # Urutkan berdasarkan jumlah aktivitas terbanyak
-        sorted_status = sorted(
-            statistik['detail'].items(), 
-            key=lambda x: x[1]['jumlah_aktivitas'], 
-            reverse=True
-        )
+        status_items = list(statistik['detail'].items())
+        n = len(status_items)
         
-        for status, data in sorted_status:
+        for i in range(n):
+            swapped = False
+            for j in range(0, n - i - 1):
+                if status_items[j][1]['jumlah_aktivitas'] < status_items[j + 1][1]['jumlah_aktivitas']:
+                    status_items[j], status_items[j + 1] = status_items[j + 1], status_items[j]
+                    swapped = True
+            
+            if not swapped:
+                break
+
+        for status, data in status_items:
             status_icon = get_status_icon(status)
             persentase = (data['jumlah_aktivitas'] / statistik['total_aktivitas'] * 100) if statistik['total_aktivitas'] > 0 else 0
             
@@ -242,7 +246,19 @@ def lihat_statistik_lengkap():
             
             if data.get('by_category'):
                 print(f"  └ Kategori:")
-                for kategori, jumlah in data['by_category'].items():
+                kategori_items = list(data['by_category'].items())
+                k_n = len(kategori_items)
+                
+                for k in range(k_n):
+                    swapped_k = False
+                    for l in range(0, k_n - k - 1):
+                        if kategori_items[l][1] < kategori_items[l + 1][1]:
+                            kategori_items[l], kategori_items[l + 1] = kategori_items[l + 1], kategori_items[l]
+                            swapped_k = True
+                    if not swapped_k:
+                        break
+                
+                for kategori, jumlah in kategori_items:
                     print(f"    • {kategori}: {jumlah} item")
         
         print(f"\n🔍 ANALISIS LANJUT")
@@ -262,7 +278,6 @@ def lihat_statistik_lengkap():
         print(f"\n💡 REKOMENDASI")
         print("═" * 50)
         
-        # Berikan rekomendasi berdasarkan data
         total_terbuang = efficiency_stats['wasted_items']
         total_semua = statistik['total_item']
         
@@ -336,21 +351,16 @@ def lihat_makanan_terbuang():
         print("Inilah makanan-makanan yang terbuang:")
         print("═" * 60)
         
-        total_nilai = 0
         for i, makanan in enumerate(wasted_food, start=1):
-            nilai = makanan['jumlah'] * 5000  # Estimasi nilai per item
-            total_nilai += nilai
             
             print(f"{i}. {makanan['nama']}")
             print(f"   Jumlah: {makanan['jumlah']} | Kategori: {makanan['jenis_makanan']}")
             if makanan.get('tanggal_kadaluwarsa'):
                 print(f"   Kadaluarsa: {makanan['tanggal_kadaluwarsa']}")
             print(f"   Waktu: {makanan['timestamp'][:16]}")
-            print(f"   Estimasi nilai: Rp {nilai:,}")
             print()
         
         print("═" * 60)
-        print(f"💰 TOTAL ESTIMASI KERUGIAN: Rp {total_nilai:,}")
         
         print(f"\n💡 TIPS MENGURANGI FOOD WASTE:")
         print("1. Periksa tanggal kadaluarsa secara berkala")
@@ -379,7 +389,20 @@ def lihat_makanan_digunakan():
                 grouped_by_day[tanggal] = []
             grouped_by_day[tanggal].append(makanan)
         
-        for tanggal, items in sorted(grouped_by_day.items(), reverse=True):
+        dates_items = list(grouped_by_day.items())
+        n_dates = len(dates_items)
+        
+        for i in range(n_dates):
+            swapped = False
+            for j in range(0, n_dates - i - 1):
+                if dates_items[j][0] < dates_items[j + 1][0]:
+                    dates_items[j], dates_items[j + 1] = dates_items[j + 1], dates_items[j]
+                    swapped = True
+            
+            if not swapped:
+                break
+        
+        for tanggal, items in dates_items:
             hari = datetime.strptime(tanggal, '%Y-%m-%d').strftime('%A, %d %B %Y')
             print(f"\n📅 {hari}")
             print("-" * 40)
@@ -499,7 +522,20 @@ def lihat_ringkasan_bulanan():
         total_aktivitas = 0
         total_item = 0
         
-        for tanggal, items in sorted(grouped_by_date.items()):
+        dates_items = list(grouped_by_date.items())
+        n_dates = len(dates_items)
+        
+        for i in range(n_dates):
+            swapped = False
+            for j in range(0, n_dates - i - 1):
+                if dates_items[j][0] > dates_items[j + 1][0]:
+                    dates_items[j], dates_items[j + 1] = dates_items[j + 1], dates_items[j]
+                    swapped = True
+            
+            if not swapped:
+                break
+        
+        for tanggal, items in dates_items:
             hari = datetime.strptime(tanggal, '%Y-%m-%d').strftime('%a, %d')
             print(f"\n📅 {hari}")
             
