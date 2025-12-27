@@ -32,6 +32,32 @@ class UserRepository:
                 'email': email
             }
         return None
+        
+    @staticmethod
+    def verify_password(email, plain_password):
+        query = "SELECT password FROM users WHERE email = ?"
+        user = fetch_one(query, (email,))
+        
+        if user and bcrypt.checkpw(
+            plain_password.encode('utf-8'), 
+            user['password'].encode('utf-8')
+        ):
+            return True
+        return False
+    
+    @staticmethod
+    def update_password_by_email(email, new_plain_password):
+        hashed_password = bcrypt.hashpw(
+            new_plain_password.encode('utf-8'),
+            bcrypt.gensalt()
+        ).decode('utf-8')
+
+        query = """
+            UPDATE users
+            SET password = ?
+            WHERE email = ?
+        """
+        execute_query(query, (hashed_password, email))
     
     @staticmethod
     def get_user_by_id(user_id):

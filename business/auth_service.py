@@ -45,3 +45,22 @@ class AuthService:
     def logout_user():
         AppState.logout()
         return {"success": True, "message": "Logout berhasil!"}
+        
+    @staticmethod
+    def lupa_password(email, password, confirm_password):
+        if not password or not confirm_password:
+            return {"success": False, "message": "Password tidak boleh kosong"}
+
+        if password != confirm_password:
+            return {"success": False, "message": "Password dan konfirmasi tidak sama"}
+
+        if len(password) < 6:
+            return {"success": False, "message": "Password minimal 6 karakter"}
+
+        user = UserRepository.get_user_by_email(email)
+        if not user:
+            return {"success": False, "message": "Email tidak terdaftar"}
+
+        UserRepository.update_password_by_email(email, password)
+        return {"success": True, "message": "Password berhasil diperbarui. \n\nSilakan login dengan password baru Anda."}    
+    
