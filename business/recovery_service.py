@@ -45,14 +45,12 @@ class RecoveryService:
             
             df = pd.read_csv(RecoveryService.CSV_PATH)
             
-            # Cek apakah makanan sudah ada (belum dipulihkan) untuk user yang sama
+
             existing_mask = (df['id'] == makanan['id']) & (df['is_recovered'] == 0) & (df['user_id'] == user_id)
             if existing_mask.any():
-                # Update record yang ada
                 for col, value in deleted_record.items():
                     df.loc[existing_mask, col] = value
             else:
-                # Tambahkan record baru
                 new_df = pd.DataFrame([deleted_record])
                 df = pd.concat([df, new_df], ignore_index=True)
             
@@ -73,16 +71,13 @@ class RecoveryService:
             if df.empty:
                 return []
             
-            # Filter berdasarkan user_id jika diberikan
             if user_id:
                 df = df[(df['user_id'] == user_id) & (df['is_recovered'] == 0)]
             else:
                 df = df[df['is_recovered'] == 0]
-            
-            # Konversi ke list of dictionaries
+
             deleted_foods = df.to_dict('records')
             
-            # Konversi tipe data yang diperlukan
             for food in deleted_foods:
                 food['id'] = int(food['id'])
                 food['user_id'] = int(food['user_id'])
@@ -100,25 +95,21 @@ class RecoveryService:
             RecoveryService._ensure_csv_exists()
             
             df = pd.read_csv(RecoveryService.CSV_PATH)
-            
-            # Cari makanan berdasarkan ID yang belum dipulihkan
+ 
             mask = (df['id'] == deleted_food_id) & (df['is_recovered'] == 0)
             
             if not mask.any():
                 return {"success": False, "message": "Makanan tidak ditemukan atau sudah dipulihkan"}
             
-            # Ambil data makanan
             food_row = df[mask].iloc[0]
             food_data = food_row.to_dict()
             
             user_id = int(food_data['user_id'])
             current_user_id = AppState.get_user_id()
-            
-            # Cek apakah user yang login sama dengan user yang menghapus
+
             if user_id != current_user_id:
                 return {"success": False, "message": "Anda tidak memiliki izin untuk memulihkan makanan ini"}
             
-            # Pulihkan ke database
             new_food_id = MakananRepository.tambah_makanan(
                 user_id,
                 food_data['nama_makanan'],
@@ -127,7 +118,6 @@ class RecoveryService:
                 food_data['kategori']
             )
             
-            # Catat pemulihan di history
             history_id = HistoryRepository.tambah_history(
                 user_id=user_id,
                 sisa_makanan_id=new_food_id,
@@ -138,7 +128,6 @@ class RecoveryService:
                 nama=food_data['nama_makanan']
             )
             
-            # Update status history asli menjadi "dibatalkan"
             try:
                 from databases.db import execute_query
                 execute_query(
@@ -146,13 +135,11 @@ class RecoveryService:
                     (int(food_data['original_history_id']),)
                 )
             except Exception:
-                pass  # Jika tidak bisa update history, lanjut saja
-            
-            # Tandai sebagai sudah dipulihkan di CSV
+                pass  
+
             df.loc[mask, 'is_recovered'] = 1
             df.loc[mask, 'recovered_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            
-            # Simpan perubahan ke CSV
+
             df.to_csv(RecoveryService.CSV_PATH, index=False)
             
             return {
@@ -172,12 +159,10 @@ class RecoveryService:
             
             df = pd.read_csv(RecoveryService.CSV_PATH)
             
-            # Hapus baris dengan ID yang sesuai
             initial_count = len(df)
             df = df[df['id'] != deleted_food_id]
             final_count = len(df)
             
-            # Simpan kembali
             df.to_csv(RecoveryService.CSV_PATH, index=False)
             
             deleted_count = initial_count - final_count
@@ -197,23 +182,18 @@ class RecoveryService:
             if df.empty:
                 return {"success": True, "deleted_count": 0}
 
-            # Konversi deleted_at ke datetime
             df['deleted_at_dt'] = pd.to_datetime(df['deleted_at'], errors='coerce')
             
-            # Hitung hari sejak dihapus
             current_time = datetime.now()
             df['days_ago'] = (current_time - df['deleted_at_dt']).dt.days
-            
-            # Hapus record yang sudah lebih dari 'days' hari DAN sudah dipulihkan
+
             old_mask = (df['days_ago'] > days) & (df['is_recovered'] == 1)
             deleted_count = old_mask.sum()
             
             df = df[~old_mask]
             
-            # Hapus kolom tambahan
             df = df.drop(columns=['deleted_at_dt', 'days_ago'], errors='ignore')
             
-            # Simpan kembali
             df.to_csv(RecoveryService.CSV_PATH, index=False)
             
             return {"success": True, "deleted_count": int(deleted_count)}
