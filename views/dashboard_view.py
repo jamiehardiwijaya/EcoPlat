@@ -1,24 +1,34 @@
 from state import AppState
 from business.auth_service import AuthService
 from views.makanan_view import makanan_menu
-from views.statistik_view import show_statistics
 from utils.helper import Utils
 from views.profil_view import show_profil
 from views.resep_view import resep_menu
 from views.history_view import history_menu
+from views.rekomendasi_view import tampilkan_rekomendasi
+
+_notification_shown = False
 
 def show_main_app():
     """Menu utama setelah login"""
+    global _notification_shown
+    _notification_shown = False
+    
     while AppState.is_logged_in():
         show_dashboard()
-
+    
+    _notification_shown = False
     Utils.clear_screen()
     from views.auth_view import show_auth_menu
     show_auth_menu()
 
 def show_dashboard():
-    """Menampilkan dashboard dengan notifikasi sebelum menu"""
-    show_expiration_notifications_first()
+    """Menampilkan dashboard dengan notifikasi hanya sekali"""
+    global _notification_shown
+    
+    if not _notification_shown:
+        show_expiration_notifications_once()
+        _notification_shown = True
     
     Utils.print_header("Dashboard Utama")
     
@@ -43,7 +53,7 @@ def show_dashboard():
     elif choice == 2:
         resep_menu()
     elif choice == 3:
-        show_rekomendasi_menu()
+        tampilkan_rekomendasi()
     elif choice == 4:
         history_menu()
     elif choice == 5:
@@ -56,8 +66,8 @@ def show_dashboard():
             print("\n👋 Terima kasih telah menggunakan EcoPlat!")
             exit()
 
-def show_expiration_notifications_first():
-    """Tampilkan notifikasi makanan kadaluarsa sebelum menu dashboard"""
+def show_expiration_notifications_once():
+    """Tampilkan notifikasi makanan kadaluarsa HANYA SEKALI saat login pertama"""
     try:
         from databases.makanan_repository import MakananRepository
         from datetime import datetime
@@ -106,21 +116,21 @@ def show_expiration_notifications_first():
         if makanan_kadaluarsa or makanan_hampir_kadaluarsa:
             Utils.clear_screen()
             print("=" * 60)
-            print("      🔔 NOTIFIKASI MAKANAN 🔔")
+            print("      🔔 NOTIFIKASI AWAL LOGIN 🔔")
             print("=" * 60)
-            print(f"📅 Tanggal: {today.strftime('%A, %d %B %Y')}\n")
+            print(f"📅 Selamat datang kembali! Berikut status makanan Anda:\n")
             
             if makanan_kadaluarsa:
-                print("❌❌❌ MAKANAN SUDAH KADALUARSA ❌❌❌")
+                print("❌ MAKANAN SUDAH KADALUARSA:")
                 print("-" * 40)
                 for makanan in makanan_kadaluarsa:
                     hari_text = "hari ini" if makanan['hari_lewat'] == 0 else f"{makanan['hari_lewat']} hari lalu"
                     print(f"• {makanan['nama']} ({makanan['jumlah']} {makanan['kategori']})")
                     print(f"  Kadaluarsa: {makanan['tanggal']} ({hari_text})")
                     print()
-
+            
             if makanan_hampir_kadaluarsa:
-                print("⚠️ ⚠️ ⚠️ MAKANAN HAMPIR KADALUARSA ⚠️ ⚠️ ⚠️")
+                print("⚠️  MAKANAN HAMPIR KADALUARSA:")
                 print("-" * 40)
                 for makanan in makanan_hampir_kadaluarsa:
                     if makanan['hari_tersisa'] == 0:
@@ -135,19 +145,16 @@ def show_expiration_notifications_first():
                     print()
             
             print("=" * 60)
-            print("\n💡 Tips:")
-            if makanan_kadaluarsa:
-                print("• Segera buang makanan yang sudah kadaluarsa")
-            if makanan_hampir_kadaluarsa:
-                print("• Gunakan makanan hampir kadaluarsa segera")
-                print("• Cek menu 'Rekomendasi Resep' untuk ide")
+            print("\n💡 Informasi ini hanya ditampilkan sekali saat login.")
+            print("   Untuk update terkini, cek menu '🥦 Kelola Makanan'.")
             
             print("\n" + "=" * 60)
             input("\nTekan Enter untuk melanjutkan ke Dashboard... ")
             Utils.clear_screen()
             
     except Exception as e:
-        pass
+
+        print(f"⚠️  Error notifikasi: {str(e)[:50]}")
 
 def handle_logout():
     confirm = input("\nYakin ingin logout? (y/n): ").strip().lower()
@@ -157,9 +164,3 @@ def handle_logout():
         Utils.pause_and_clear()
         return True  
     return False
-
-def show_rekomendasi_menu():
-    Utils.print_header("⭐ Rekomendasi Resep")
-    print("Fitur rekomendasi resep sedang dalam pengembangan...")
-    print("Akan segera hadir dengan AI-powered recommendations!")
-    Utils.pause_and_back()

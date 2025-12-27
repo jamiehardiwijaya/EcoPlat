@@ -25,8 +25,9 @@ class ExpirationService:
                 exp_date = datetime.strptime(makanan['tanggal_kadaluarsa'], '%Y-%m-%d').date()
                 
                 if exp_date < today:
+                    # Makanan sudah kadaluarsa dan belum dihapus → dicatat sebagai terbuang
                     if record_to_history:
-                        HistoryService.record_food_expired(makanan['id'])
+                        HistoryService.record_food_wasted(makanan['id'])
                     
                     expired_foods.append({
                         'id': makanan['id'],

@@ -6,14 +6,17 @@ class HistoryRepository:
     @staticmethod
     def tambah_history(user_id, sisa_makanan_id, tanggal_kadaluwarsa, 
                       jenis_makanan, jumlah, status, nama):
+        timestamp_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
         query = """
             INSERT INTO user_history 
-            (user_id, sisa_makanan_id, tanggal_kadaluwarsa, jenis_makanan, jumlah, status, nama)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (user_id, sisa_makanan_id, tanggal_kadaluwarsa, jenis_makanan, 
+             jumlah, status, nama, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """
         return execute_query(query, (
             user_id, sisa_makanan_id, tanggal_kadaluwarsa, 
-            jenis_makanan, jumlah, status, nama
+            jenis_makanan, jumlah, status, nama, timestamp_now
         ))
     
     @staticmethod
@@ -108,7 +111,12 @@ class HistoryRepository:
     @staticmethod
     def get_wasted_food_history(user_id):
         """Mendapatkan histori makanan yang terbuang"""
-        return HistoryRepository.get_history_by_status(user_id, "kadaluarsa")
+        query = """
+            SELECT * FROM user_history 
+            WHERE user_id = ? AND status = 'terbuang'
+            ORDER BY timestamp DESC
+        """
+        return fetch_all(query, (user_id,))
     
     @staticmethod
     def get_food_usage_history(user_id):
