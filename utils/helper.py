@@ -190,6 +190,23 @@ class Utils:
             else:
                 print("❌ Masukkan hanya angka.")
                 
+    @staticmethod
+    def confirm_action(message):
+        """Meminta konfirmasi dari user"""
+        while True:
+            response = input(f"\n{message} (y/n): ").strip().lower()
+            if response in ['y', 'ya', 'yes']:
+                return True
+            elif response in ['n', 'tidak', 'no']:
+                return False
+            else:
+                print("Masukkan 'y' untuk ya atau 'n' untuk tidak")
+    
+    @staticmethod
+    def print_recovery_info(message):
+        """Mencetak informasi tentang pemulihan"""
+        print(f"\n🔄 INFO PEMULIHAN: {message}")
+                
     def greeting_user():
         """Menampilkan pesan sapaan kepada pengguna yang telah login."""
         user_name = AppState.get_user_name() or "Guest"

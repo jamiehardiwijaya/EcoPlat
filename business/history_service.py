@@ -38,7 +38,6 @@ class HistoryService:
             return {"success": False, "message": "Makanan tidak ditemukan"}
         
         try:
-            # Tentukan pesan status yang tepat
             status_messages = {
                 "digunakan": "digunakan",
                 "terbuang": "terbuang",
@@ -48,7 +47,7 @@ class HistoryService:
             
             status = status_messages.get(alasan, "dihapus")
             
-            HistoryRepository.tambah_history(
+            history_id = HistoryRepository.tambah_history(
                 user_id=user_id,
                 sisa_makanan_id=makanan_id,
                 tanggal_kadaluwarsa=makanan['tanggal_kadaluarsa'],
@@ -57,7 +56,8 @@ class HistoryService:
                 status=status,
                 nama=makanan['nama_makanan']
             )
-            return {"success": True}
+            return {"success": True, "history_id": history_id}
+        
         except Exception as e:
             return {"success": False, "message": f"Gagal mencatat histori: {e}"}
     

@@ -15,9 +15,11 @@ def execute_query(query, params=()):
     c = con.cursor()
     c.execute(query, params)
     con.commit()
+    
     last_id = c.lastrowid
+    
     con.close()
-    return last_id
+    return last_id  
 
 def fetch_one(query, params=()):
     con = get_db_connection()
