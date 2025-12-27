@@ -71,3 +71,40 @@ class RecipeService:
             return {"success": True, "message": "Resep berhasil dihapus"}
         except Exception as e:
             return {"success": False, "message": str(e)}
+        
+    @staticmethod
+    def update_resep(id_resep, nama_resep, deskripsi, daftar_bahan):
+        user_id = AppState.get_user_id()
+
+        if not user_id:
+            return {"success": False, "message": "Anda belum login"}
+
+        resep = ResepRepository.get_by_user(user_id)
+        target = next((r for r in resep if r["id"] == int(id_resep)), None)
+
+        if not target:
+            return {"success": False, "message": "Resep tidak ditemukan"}
+
+        try:
+            ResepRepository.update_resep(id_resep, nama_resep, deskripsi)
+
+            BahanResepRepository.delete_by_resep(id_resep)
+
+            for nama_bahan_input in daftar_bahan:
+                nama_normal = nama_bahan_input.strip().lower()
+                if not nama_normal:
+                    continue
+
+                bahan = BahanRepository.get_by_name_case_insensitive(nama_normal)
+
+                if bahan:
+                    bahan_id = bahan["id"]
+                else:
+                    bahan_id = BahanRepository.tambah_bahan(nama_normal.capitalize())
+
+                BahanResepRepository.tambah(id_resep, bahan_id)
+
+            return {"success": True, "message": "Resep berhasil diperbarui"}
+
+        except Exception as e:
+            return {"success": False, "message": str(e)}

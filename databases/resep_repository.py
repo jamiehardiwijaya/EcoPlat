@@ -45,3 +45,14 @@ class ResepRepository:
         WHERE br.bahan_id = ?
         """
         return fetch_all(query, (bahan_id,))
+    
+    @staticmethod
+    def update_resep(id_resep, nama_resep, deskripsi):
+        query = """
+            UPDATE resep
+            SET nama_resep = ?, deskripsi = ?
+            WHERE id = ?
+        """
+        return execute_query(query, (
+            nama_resep, deskripsi, id_resep
+        ))

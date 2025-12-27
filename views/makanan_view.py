@@ -95,6 +95,18 @@ def tambah_makanan():
             Utils.print_error(result["message"])
             Utils.pause_and_back()
 
+def lihat_semua_makanan(makanan_list):
+    for i, m in enumerate(makanan_list, start=1):
+        print(f"""
+[{i}] -------------------------------
+ID         : {m['id']}
+Nama       : {m['nama_makanan']}
+Jumlah     : {m['jumlah']}
+Kadaluarsa : {m['tanggal_kadaluarsa']}
+Kategori   : {m['kategori']}
+-----------------------------------
+""")
+        
 def lihat_makanan():
     Utils.clear_screen()
     Utils.print_header("📋 DAFTAR MAKANAN")
@@ -116,23 +128,48 @@ def lihat_makanan():
         Utils.pause_and_back()
         return
 
-    for i, m in enumerate(makanan_list, start=1):
-        print(f"""
-[{i}] -------------------------------
-ID         : {m['id']}
-Nama       : {m['nama_makanan']}
-Jumlah     : {m['jumlah']}
-Kadaluarsa : {m['tanggal_kadaluarsa']}
-Kategori   : {m['kategori']}
------------------------------------
-""")
+    while True:
+        print("Pilih opsi tampilan:")
+        print("1. Tampilkan semua makanan")
+        print("2. Cari Makanan")
+        print("0. Kembali ke menu sebelumnya")
 
-    Utils.pause_and_back()
+        choice = input("\nPilihan Anda: ").strip()
+
+        if choice == "1":
+            Utils.print_header("📋 DAFTAR SEMUA MAKANAN")
+            lihat_semua_makanan(makanan_list)
+            Utils.pause_and_back()
+            return
+        
+        elif choice == "2":
+            keyword = input("Cari (nama/kategori): ").strip().lower()
+            if keyword == "0":
+                return
+            
+            hasil = [m for m in makanan_list if keyword in m['nama_makanan'].lower() or keyword in m['kategori'].lower()]
+                    
+            if not hasil:
+                Utils.print_warning("Tidak ada makanan yang sesuai dengan kata kunci.")
+            else:
+                Utils.clear_screen()
+                Utils.loading_animation()
+                Utils.print_header(f"🔍 HASIL PENCARIAN UNTUK '{keyword}'")
+                lihat_semua_makanan(hasil)
+            
+            Utils.pause_and_back()
+            return
+        
+        elif choice == "0":
+            return
+        else:
+            Utils.print_error("Pilihan tidak valid!")
 
 def update_makanan():
     while True:
         Utils.clear_screen()
         Utils.print_header("✏️ UPDATE MAKANAN")
+        print("Ketik 0 pada inputan apapun untuk kembali ke menu sebelumnya\n")
 
         makanan_list = FoodService.lihat_makanan()
         if not makanan_list:
@@ -157,9 +194,15 @@ def update_makanan():
 
         print("\n(Kosongkan jika tidak ingin mengubah)")
         nama = input(f"Nama [{target['nama_makanan']}]: ").strip() or target["nama_makanan"]
+        if nama == "0":
+            return
         jumlah = input(f"Jumlah [{target['jumlah']}]: ").strip() or target["jumlah"]
+        if jumlah == "0":
+            return
         while True:
             tanggal = input(f"Tanggal [{target['tanggal_kadaluarsa']}]: ").strip() or target["tanggal_kadaluarsa"]
+            if tanggal == "0":
+                return
             try:
                 exp_date = datetime.strptime(tanggal, "%Y-%m-%d")
                 days_left = (exp_date.date() - datetime.now().date()).days
@@ -174,6 +217,8 @@ def update_makanan():
             except ValueError:
                 print("❌ Format tanggal salah! Gunakan YYYY-MM-DD")
         kategori = input(f"Kategori [{target['kategori']}]: ").strip() or target["kategori"]
+        if kategori == "0":
+            return
 
         if not Utils.confirm_action("Simpan perubahan?"):
             Utils.print_warning("Update dibatalkan.")

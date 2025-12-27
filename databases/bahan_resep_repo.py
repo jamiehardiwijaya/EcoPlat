@@ -19,3 +19,8 @@ class BahanResepRepository:
         WHERE br.resep_id = ?
         """
         return fetch_all(query, (resep_id,))
+    
+    @staticmethod
+    def delete_by_resep(resep_id):
+        query = "DELETE FROM bahan_resep WHERE resep_id = ?"
+        execute_query(query, (resep_id,))
