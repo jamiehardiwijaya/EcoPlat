@@ -19,26 +19,22 @@ def makanan_menu():
         Utils.clear_screen()
         Utils.print_header("MENU MAKANAN")
 
-        for i, item in enumerate(menu_items, start=1):
-            print(f"[{i}] {item}")
+        pilihan = Utils.pilih_menu(menu_items)
 
-        pilihan = input("\nPilih menu [1-6]: ").strip()
-
-        if pilihan == "1":
+        if pilihan == 1:
             tambah_makanan()
-        elif pilihan == "2":
+        elif pilihan == 2:
             lihat_makanan()
-        elif pilihan == "3":
+        elif pilihan == 3:
             update_makanan()
-        elif pilihan == "4":
+        elif pilihan == 4:
             hapus_makanan()
-        elif pilihan == "5":  
+        elif pilihan == 5:  
             pulihkan_makanan()
-        elif pilihan == "6":
+        elif pilihan == 6:
             return
         else:
             Utils.print_error("Pilihan tidak valid!")
-            Utils.pause_and_back()
 
 
 def tambah_makanan():

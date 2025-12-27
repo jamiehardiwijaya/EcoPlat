@@ -21,29 +21,24 @@ def resep_menu():
         Utils.clear_screen()
         Utils.print_header("MENU RESEP")
 
-        for i, item in enumerate(menu_items, start=1):
-            print(f"[{i}] {item}")
+        pilihan = Utils.pilih_menu(menu_items)
 
-        pilihan = input("\nPilih menu [1-7]: ").strip()
-
-        if pilihan == "1":
+        if pilihan == 1:
             tambah_resep()
-        elif pilihan == "2":
+        elif pilihan == 2:
             lihat_resep_saya()
-        elif pilihan == "3":
+        elif pilihan == 3:
             lihat_semua_resep()
-        elif pilihan == "4":
+        elif pilihan == 4:
             update_resep()
-        elif pilihan == "5":
+        elif pilihan == 5:
             hapus_resep()
-        elif pilihan == "6":
-            # pulihkan_resep()
-            pass
-        elif pilihan == "7":
+        elif pilihan == 6:
+            pulihkan_resep()
+        elif pilihan == 7:
             return
         else:
             Utils.print_error("Pilihan tidak valid!")
-            Utils.pause_and_back()
 
 def tambah_resep():
     Utils.clear_screen()
@@ -234,6 +229,8 @@ def update_resep():
             Utils.pause_and_back()
 
 def hapus_resep():
+    from business.recovery_resep_service import RecipeRecoveryService
+
     while True:
         Utils.clear_screen()
         Utils.print_header("🗑️ HAPUS RESEP")
@@ -253,22 +250,83 @@ def hapus_resep():
         if resep_id == "0":
             return
 
-        if not any(str(r["id"]) == resep_id for r in resep_list):
+        target = next((r for r in resep_list if str(r["id"]) == resep_id), None)
+        if not target:
             Utils.print_error("ID resep tidak ditemukan!")
             Utils.pause_and_back()
             continue
 
-        if not Utils.confirm_action("Yakin ingin menghapus resep ini?"):
-            Utils.print_warning("Penghapusan dibatalkan.")
+        if not Utils.confirm_action(f"Hapus resep '{target['nama_resep']}'?"):
+            Utils.print_warning("Dibatalkan.")
             Utils.pause_and_back()
             return
 
-        result = RecipeService.hapus_resep(resep_id)
+        result = RecipeService.hapus_resep(int(resep_id))
 
         if result["success"]:
             Utils.print_success(result["message"])
-            Utils.pause_and_clear()
-            return
         else:
             Utils.print_error(result["message"])
+
+        Utils.pause_and_back()
+        return
+
+def pulihkan_resep():
+    from business.recovery_resep_service import RecipeRecoveryService
+    from state import AppState
+
+    while True:
+        Utils.clear_screen()
+        Utils.print_header("🔄 PULIHKAN RESEP")
+
+        user_id = AppState.get_user_id()
+        deleted = RecipeRecoveryService.get_deleted_recipes(user_id)
+
+        if not deleted:
+            Utils.print_warning("Tidak ada resep yang dapat dipulihkan.")
+            Utils.pause_and_back()
+            return
+
+        print(f"\nDitemukan {len(deleted)} resep:\n")
+        print("=" * 60)
+
+        for i, r in enumerate(deleted, 1):
+            print(f"{i}. {r['nama_resep'][:25]:<25} | Dihapus: {r['deleted_at']}")
+
+        print("=" * 60)
+        print("\nPilih nomor resep untuk dipulihkan")
+        print("0. Kembali")
+
+        choice = input("\nPilih: ").strip()
+
+        if choice == "0":
+            return
+
+        try:
+            idx = int(choice)
+            if 1 <= idx <= len(deleted):
+                resep = deleted[idx - 1]
+
+                if not Utils.confirm_action(
+                    f"Pulihkan resep '{resep['nama_resep']}'?"
+                ):
+                    Utils.print_warning("Dibatalkan.")
+                    Utils.pause_and_back()
+                    return
+
+                result = RecipeRecoveryService.recover_recipe(resep["id"])
+
+                if result["success"]:
+                    Utils.print_success(result["message"])
+                else:
+                    Utils.print_error(result["message"])
+
+                Utils.pause_and_back()
+                return
+            else:
+                Utils.print_error("Pilihan tidak valid!")
+                Utils.pause_and_back()
+
+        except ValueError:
+            Utils.print_error("Masukkan angka yang valid!")
             Utils.pause_and_back()

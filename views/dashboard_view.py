@@ -38,8 +38,7 @@ def show_dashboard():
         "⭐ Rekomendasi Resep",
         "📜 Histori Aktivitas",
         "👤 Profil Saya",
-        "🚪 Logout",
-        "❌ Keluar Aplikasi"
+        "🚪 Logout"
     ]
     
     Utils.greeting_user()
@@ -60,11 +59,9 @@ def show_dashboard():
         show_profil()
     elif choice == 6:
         if handle_logout():
-            return 
-    elif choice == 7:
-        if Utils.confirm_action("Yakin ingin keluar?"):
-            print("\n👋 Terima kasih telah menggunakan EcoPlat!")
-            exit()
+            return
+    else:
+        Utils.print_error("Pilihan tidak valid!")
 
 def show_expiration_notifications_once():
     """Tampilkan notifikasi makanan kadaluarsa HANYA SEKALI saat login pertama"""

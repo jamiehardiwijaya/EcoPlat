@@ -56,3 +56,12 @@ class ResepRepository:
         return execute_query(query, (
             nama_resep, deskripsi, id_resep
         ))
+    
+    @staticmethod
+    def get_by_id_and_user(resep_id, user_id):
+        query = """
+        SELECT id, nama_resep, deskripsi
+        FROM resep
+        WHERE id = ? AND user_id = ?
+        """
+        return fetch_one(query, (resep_id, user_id))

@@ -1,6 +1,8 @@
 from databases.resep_repository import ResepRepository
 from databases.bahan_repository import BahanRepository
 from databases.bahan_resep_repo import BahanResepRepository
+from business.recovery_resep_service import RecipeRecoveryService   
+from databases.resep_repository import ResepRepository
 from state import AppState
 
 class RecipeService:
@@ -66,11 +68,19 @@ class RecipeService:
     def hapus_resep(resep_id):
         user_id = AppState.get_user_id()
 
-        try:
-            ResepRepository.delete_resep(resep_id, user_id)
-            return {"success": True, "message": "Resep berhasil dihapus"}
-        except Exception as e:
-            return {"success": False, "message": str(e)}
+        resep = ResepRepository.get_by_id_and_user(resep_id, user_id)
+        if not resep:
+            return {"success": False, "message": "Resep tidak ditemukan"}
+
+        bahan = BahanResepRepository.get_bahan_by_resep(resep_id)
+        resep["bahan"] = [b["nama"] for b in bahan]
+        resep["user_id"] = user_id
+
+        RecipeRecoveryService.record_deleted_recipe(resep)
+
+        ResepRepository.delete_resep(resep_id, user_id)
+
+        return {"success": True, "message": "Resep dihapus & bisa dipulihkan"}
         
     @staticmethod
     def update_resep(id_resep, nama_resep, deskripsi, daftar_bahan):
