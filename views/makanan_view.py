@@ -4,11 +4,17 @@ from state import AppState
 from utils.helper import Utils
 from datetime import datetime
 
-
+list_kategori = [
+            "Sayur",
+            "Daging",
+            "Minuman",
+            "Buah",
+            "Lainnya"
+        ]
 def makanan_menu():
     menu_items = [
-        "➕ Tambah Makanan",
-        "📋 Lihat Daftar Makanan",
+        "➕ Lihat Daftar Makanan",
+        "📋 Tambah Makanan",
         "✏️  Update Makanan",
         "🗑️  Hapus Makanan",
         "🔄 Pulihkan Makanan", 
@@ -22,9 +28,9 @@ def makanan_menu():
         pilihan = Utils.pilih_menu(menu_items)
 
         if pilihan == 1:
-            tambah_makanan()
-        elif pilihan == 2:
             lihat_makanan()
+        elif pilihan == 2:
+            tambah_makanan()
         elif pilihan == 3:
             update_makanan()
         elif pilihan == 4:
@@ -56,7 +62,7 @@ def tambah_makanan():
             continue
 
         while True:
-            tanggal = input("Tanggal kadaluarsa (YYYY-MM-DD): ").strip()
+            tanggal = input("Tanggal kadaluarsa (YYYY-MM-DD), Contoh --> 2026-01-01 : ").strip()
             if tanggal == "0":
                 return
             try:
@@ -72,14 +78,24 @@ def tambah_makanan():
                 break
             except ValueError:
                 print("❌ Format tanggal salah! Gunakan YYYY-MM-DD")
+                print("Contoh format tanggal : 2026-01-01")
 
-        kategori = input("Kategori      : ").strip()
+        print("Kategori")
+        for i, kat in enumerate(list_kategori, start=1):
+            print(f"{i}. {kat}")
+        print("0. Kembali")
+
+        kategori = input("\nPilih kategori: ").strip()
+
         if kategori == "0":
             return
-        if not kategori:
-            Utils.print_error("Kategori tidak boleh kosong!")
+
+        if not kategori.isdigit() or not (1 <= int(kategori) <= len(list_kategori)):
+            Utils.print_error("Pilihan kategori tidak valid!")
             Utils.pause_and_back()
             continue
+
+        kategori = list_kategori[int(kategori) - 1]
 
         result = FoodService.tambah_makanan(nama, jumlah, tanggal, kategori)
 
@@ -173,20 +189,20 @@ def update_makanan():
             Utils.pause_and_back()
             return
 
-        for m in makanan_list:
-            print(f"{m['id']} - {m['nama_makanan']}")
+        for i, m in enumerate(makanan_list, start=1):
+            print(f"{i}. {m['nama_makanan']}")
 
-        print("\nMasukkan ID makanan (0 untuk kembali)")
-        id_makanan = input("> ").strip()
+        pilihan = input("\nPilih nomor makanan: ").strip()
 
-        if id_makanan == "0":
+        if pilihan == "0":
             return
 
-        target = next((m for m in makanan_list if str(m["id"]) == id_makanan), None)
-        if not target:
-            Utils.print_error("ID makanan tidak ditemukan!")
+        if not pilihan.isdigit() or not (1 <= int(pilihan) <= len(makanan_list)):
+            Utils.print_error("Pilihan tidak valid!")
             Utils.pause_and_back()
             continue
+
+        target = makanan_list[int(pilihan) - 1]
 
         print("\n(Kosongkan jika tidak ingin mengubah)")
         nama = input(f"Nama [{target['nama_makanan']}]: ").strip() or target["nama_makanan"]
@@ -212,26 +228,43 @@ def update_makanan():
                 break
             except ValueError:
                 print("❌ Format tanggal salah! Gunakan YYYY-MM-DD")
-        kategori = input(f"Kategori [{target['kategori']}]: ").strip() or target["kategori"]
-        if kategori == "0":
-            return
+                print("Contoh format tanggal : 2026-01-01")
+        
+        while True:
+            print("Kategori")
+            for i, kat in enumerate(list_kategori, start=1):
+                print(f"{i}. {kat}")
 
-        if not Utils.confirm_action("Simpan perubahan?"):
-            Utils.print_warning("Update dibatalkan.")
-            Utils.pause_and_back()
-            return
+            kategori = input(f"Kategori [{target['kategori']}]: ").strip() 
 
-        result = FoodService.update_makanan(
-            id_makanan, nama, jumlah, tanggal, kategori
-        )
+            if kategori == "0":
+                return
+            
+            if kategori == "":
+                kategori = target["kategori"]
+            elif kategori.isdigit() and 1 <= int(kategori) <= len(list_kategori):
+                kategori = list_kategori[int(kategori) - 1]
+            else:
+                Utils.print_error("Pilihan kategori tidak valid!")
+                Utils.pause_and_back()
+                continue
 
-        if result["success"]:
-            Utils.print_success(result["message"])
-            Utils.pause_and_clear()
-            return
-        else:
-            Utils.print_error(result["message"])
-            Utils.pause_and_back()
+            if not Utils.confirm_action("Simpan perubahan?"):
+                Utils.print_warning("Update dibatalkan.")
+                Utils.pause_and_back()
+                return
+
+            result = FoodService.update_makanan(
+                target["id"],nama, jumlah, tanggal, kategori
+            )
+
+            if result["success"]:
+                Utils.print_success(result["message"])
+                Utils.pause_and_clear()
+                return
+            else:
+                Utils.print_error(result["message"])
+                Utils.pause_and_back()
 
 def hapus_makanan():
     while True:
@@ -244,20 +277,21 @@ def hapus_makanan():
             Utils.pause_and_back()
             return
 
-        for m in makanan_list:
-            print(f"{m['id']} - {m['nama_makanan']}")
+        for i, m in enumerate(makanan_list, start=1):
+            print(f"{i}. {m['nama_makanan']}")
 
-        print("\nMasukkan ID makanan (0 untuk kembali)")
-        id_makanan = input("> ").strip()
+        print("\nMasukkan nomor makanan (0 untuk kembali)")
+        pilihan = input("> ").strip()
 
-        if id_makanan == "0":
+        if pilihan == "0":
             return
 
-        target = next((m for m in makanan_list if str(m["id"]) == id_makanan), None)
-        if not target:
-            Utils.print_error("ID makanan tidak ditemukan!")
+        if not pilihan.isdigit() or not (1 <= int(pilihan) <= len(makanan_list)):
+            Utils.print_error("Pilihan tidak valid!")
             Utils.pause_and_back()
             continue
+
+        target = makanan_list[int(pilihan) - 1]
 
         print(f"\nNama     : {target['nama_makanan']}")
         print(f"Jumlah   : {target['jumlah']}")
@@ -274,7 +308,7 @@ def hapus_makanan():
             Utils.pause_and_back()
             return
 
-        result = FoodService.hapus_makanan(id_makanan)
+        result = FoodService.hapus_makanan(target["id"])
 
         if result["success"]:
             Utils.print_success(result["message"])

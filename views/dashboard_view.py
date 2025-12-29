@@ -77,7 +77,7 @@ def show_expiration_notifications_once():
         if not semua_makanan:
             return
         
-        today = datetime.now()
+        today = datetime.now().date()
         makanan_kadaluarsa = []
         makanan_hampir_kadaluarsa = []
         
@@ -87,7 +87,7 @@ def show_expiration_notifications_once():
                 continue
                 
             try:
-                exp_date = datetime.strptime(tanggal_str, '%Y-%m-%d')
+                exp_date = datetime.strptime(tanggal_str, '%Y-%m-%d').date()
                 hari = (exp_date - today).days
                 
                 if hari < 0:
