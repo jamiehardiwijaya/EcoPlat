@@ -13,8 +13,8 @@ list_kategori = [
         ]
 def makanan_menu():
     menu_items = [
-        "➕ Lihat Daftar Makanan",
-        "📋 Tambah Makanan",
+        "📋 Lihat Daftar Makanan",
+        "➕ Tambah Makanan",
         "✏️  Update Makanan",
         "🗑️  Hapus Makanan",
         "🔄 Pulihkan Makanan", 

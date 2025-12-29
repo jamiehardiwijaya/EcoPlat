@@ -8,9 +8,9 @@ from views.makanan_view import lihat_semua_makanan
 
 def resep_menu():
     menu_items = [
-        "➕ Tambah Resep",
         "📋 Lihat Resep Saya",
         "🌍 Lihat Semua Resep",
+        "➕ Tambah Resep",
         "✏️  Update Resep",
         "🗑️  Hapus Resep",
         "🔄 Pulihkan Resep",
@@ -24,11 +24,11 @@ def resep_menu():
         pilihan = Utils.pilih_menu(menu_items)
 
         if pilihan == 1:
-            tambah_resep()
-        elif pilihan == 2:
             lihat_resep_saya()
-        elif pilihan == 3:
+        elif pilihan == 2:
             lihat_semua_resep()
+        elif pilihan == 3:
+            tambah_resep()
         elif pilihan == 4:
             update_resep()
         elif pilihan == 5:
@@ -180,20 +180,20 @@ def update_resep():
             Utils.pause_and_back()
             return
 
-        for m in resep_menu:
-            print(f"{m['id']} - {m['nama_resep']}")
+        for i, m in enumerate(resep_menu, start=1):
+            print(f"{i}. {m['nama_resep']}")
 
-        print("\nMasukkan ID resep (0 untuk kembali)")
-        id_resep = input("> ").strip()
+        pilihan = input("\nPilih nomor resep: ").strip()
 
-        if id_resep == "0":
+        if pilihan == "0":
             return
 
-        target = next((m for m in resep_menu if str(m["id"]) == id_resep), None)
-        if not target:
-            Utils.print_error("ID resep tidak ditemukan!")
+        if not pilihan.isdigit() or not (1 <= int(pilihan) <= len(resep_menu)):
+            Utils.print_error("Pilihan tidak valid!")
             Utils.pause_and_back()
             continue
+
+        target = resep_menu[int(pilihan) - 1]
 
         print("\n(Kosongkan jika tidak ingin mengubah)")
         nama = input(f"Nama [{target['nama_resep']}]: ").strip() or target["nama_resep"]
@@ -217,7 +217,7 @@ def update_resep():
             return
 
         result = RecipeService.update_resep(
-            id_resep, nama, deskripsi, daftar_bahan
+            target["id"], nama, deskripsi, daftar_bahan
         )
 
         if result["success"]:
@@ -242,26 +242,38 @@ def hapus_resep():
             Utils.pause_and_back()
             return
 
-        for r in resep_list:
-            print(f"{r['id']} - {r['nama_resep']}")
+        for i, m in enumerate(resep_list, start=1):
+            print(f"{i}. {m['nama_resep']}")
 
-        resep_id = input("\nMasukkan ID resep (0 untuk kembali): ").strip()
+        print("\nMasukkan nomor resep (0 untuk kembali)")
+        pilihan = input("> ").strip()
 
-        if resep_id == "0":
+        if pilihan == "0":
             return
 
-        target = next((r for r in resep_list if str(r["id"]) == resep_id), None)
-        if not target:
-            Utils.print_error("ID resep tidak ditemukan!")
+        if not pilihan.isdigit() or not (1 <= int(pilihan) <= len(resep_list)):
+            Utils.print_error("Pilihan tidak valid!")
             Utils.pause_and_back()
             continue
+
+        target = resep_list[int(pilihan) - 1]
+
+        print(f"\nNama     : {target['nama_resep']}")
+        print(f"Deskripsi: {target['deskripsi']}")
+        print(f"Bahan    : {', '.join(target['bahan'])}")
+
+        
+        print(f"\n💡 Informasi:")
+        print(f"• Resep akan dicatat di histori")
+        print(f"• Dapat dipulihkan nanti melalui menu '🔄 Pulihkan Resep'")
+        print(f"• Data akan disimpan selama 30 hari")
 
         if not Utils.confirm_action(f"Hapus resep '{target['nama_resep']}'?"):
             Utils.print_warning("Dibatalkan.")
             Utils.pause_and_back()
             return
 
-        result = RecipeService.hapus_resep(int(resep_id))
+        result = RecipeService.hapus_resep(int(target["id"]))
 
         if result["success"]:
             Utils.print_success(result["message"])
