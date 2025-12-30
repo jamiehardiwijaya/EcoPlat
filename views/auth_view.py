@@ -165,16 +165,17 @@ def handle_register():
     
     # Utils.print_info("Buat akun baru untuk mulai mengelola makanan")
     # print()  # Spacing
-    
-    nama = Utils.get_input("Nama lengkap\t:")
-    
-    if nama == "0":
-        return
-    
-    if not nama:
-        Utils.print_error("Nama tidak boleh kosong!\n")
-        return
-    
+    while True:
+        nama = Utils.get_input("Nama lengkap\t:")
+        
+        if nama == "0":
+            return
+        
+        if not nama:
+            Utils.print_error("Nama tidak boleh kosong!\n")
+            continue
+        break
+        
     while True:
         email = Utils.get_input("Email \t\t:")
         
@@ -195,6 +196,7 @@ def handle_register():
         
         if email_exists:
             Utils.print_error("Email sudah terdaftar!\n")
+            print("Gunakan email lain atau login jika sudah memiliki akun.\n")
             continue
         else:
             Utils.print_success("Email tersedia!\n")
@@ -205,7 +207,9 @@ def handle_register():
         
         if password == "0":
             return
-        
+        if not password:
+            Utils.print_error("Password tidak boleh kosong!\n")
+            continue
         if len(password) < 6:
             Utils.print_error("Password minimal 6 karakter!\n")
             continue

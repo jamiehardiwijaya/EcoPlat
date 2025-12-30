@@ -49,22 +49,32 @@ def tambah_makanan():
         Utils.print_header("➕ TAMBAH MAKANAN")
         print("Masukkan 0 pada inputan apapun untuk kembali.\n")
 
-        nama = input("Nama makanan : ").strip()
-        if nama == "0":
-            return
-        jumlah = input("Jumlah       : ").strip()
-        if jumlah == "0":
-            return
+        while True:
+            nama = input("Nama makanan : ").strip()
+            if nama == "0":
+                return
+            if not nama:
+                Utils.print_error("Nama makanan tidak boleh kosong!")
+                continue
+            break
+        
+        while True:
+            jumlah = input("Jumlah       : ").strip()
+            if jumlah == "0":
+                return
 
-        if not nama or not jumlah:
-            Utils.print_error("Nama dan/atau jumlah tidak boleh kosong!")
-            Utils.pause_and_back()
-            continue
+            if not jumlah:
+                Utils.print_error("Jumlah tidak boleh kosong!")
+                continue
+            break   
 
         while True:
             tanggal = input("Tanggal kadaluarsa (YYYY-MM-DD), Contoh --> 2026-01-01 : ").strip()
             if tanggal == "0":
                 return
+            if not tanggal:
+                Utils.print_error("Tanggal kadaluarsa tidak boleh kosong!")
+                continue
             try:
                 exp_date = datetime.strptime(tanggal, "%Y-%m-%d")
                 days_left = (exp_date.date() - datetime.now().date()).days
@@ -79,21 +89,23 @@ def tambah_makanan():
             except ValueError:
                 print("❌ Format tanggal salah! Gunakan YYYY-MM-DD")
                 print("Contoh format tanggal : 2026-01-01")
+        while True:
+            print("Kategori")
+            for i, kat in enumerate(list_kategori, start=1):
+                print(f"{i}. {kat}")
+            print("0. Kembali")
 
-        print("Kategori")
-        for i, kat in enumerate(list_kategori, start=1):
-            print(f"{i}. {kat}")
-        print("0. Kembali")
+            kategori = input("\nPilih kategori: ").strip()
 
-        kategori = input("\nPilih kategori: ").strip()
-
-        if kategori == "0":
-            return
-
-        if not kategori.isdigit() or not (1 <= int(kategori) <= len(list_kategori)):
-            Utils.print_error("Pilihan kategori tidak valid!")
-            Utils.pause_and_back()
-            continue
+            if kategori == "0":
+                return
+            if not kategori:
+                Utils.print_error("Kategori tidak boleh kosong!")
+                continue
+            if not kategori.isdigit() or not (1 <= int(kategori) <= len(list_kategori)):
+                Utils.print_error("Pilihan kategori tidak valid!")
+                continue
+            break
 
         kategori = list_kategori[int(kategori) - 1]
 

@@ -283,12 +283,14 @@ def cari_histori():
     """Mencari histori berdasarkan keyword dengan loop berulang"""
     while True:
         Utils.print_header("🔎 Cari Histori")
-        
+        print("Ketik 0 untuk kembali ke menu sebelumnya.\n")
         print("Cari berdasarkan: nama, status, atau kategori makanan")
         print("Contoh: 'nasi', 'digunakan', 'sayuran', 'ditambahkan'")
         print("-" * 60)
         
         keyword = input("Masukkan kata kunci pencarian (*berdasarkan nama, status, kategori): ").strip()
+        if keyword == "0":
+            return
         
         if not keyword:
             Utils.print_error("Kata kunci tidak boleh kosong!")
