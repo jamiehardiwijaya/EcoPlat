@@ -49,15 +49,16 @@ def tambah_resep():
         nama = input("Nama resep      : ").strip()
         if nama == "0":
             return
+        if not nama:
+            Utils.print_error("Nama resep tidak boleh kosong!")
+            continue
+        break
+    while True:
         deskripsi = input("Deskripsi resep : ").strip()
         if deskripsi == "0":    
             return
-
-        if not nama or not deskripsi:
-            Utils.print_error("Nama dan/atau deskripsi tidak boleh kosong!")
-            Utils.pause_and_back()
-            Utils.clear_screen()
-            Utils.print_header("➕ TAMBAH RESEP")
+        if not deskripsi:
+            Utils.print_error("Deskripsi resep tidak boleh kosong!")
             continue
         break
 
@@ -108,18 +109,19 @@ def lihat_resep_saya():
         return
     
     while True:
+        Utils.print_header("📋 RESEP SAYA")
         print("Pilih opsi tampilan:")
-        print("1. Tampilkan semua resep")
+        print("1. Tampilkan semua resep saya")
         print("2. Cari Resep")
         print("0. Kembali ke menu sebelumnya")
 
         choice = input("\nPilihan Anda: ").strip()
 
         if choice == "1":
-            Utils.print_header("📋 DAFTAR SEMUA RESEP")
+            Utils.print_header("📋 DAFTAR SEMUA RESEP SAYA")
             lihat_resep(resep_list)
-            Utils.pause_and_back()
-            return
+            Utils.pause_and_clear()
+            continue
         
         elif choice == "2":
             keyword = input("Cari (nama): ").strip().lower()
@@ -136,26 +138,16 @@ def lihat_resep_saya():
                 Utils.print_header(f"🔍 HASIL PENCARIAN UNTUK '{keyword}'")
                 lihat_resep(hasil)
             
-            Utils.pause_and_back()
-            return
+            Utils.pause_and_clear()
+            continue
         
         elif choice == "0":
             return
         else:
             Utils.print_error("Pilihan tidak valid!")
 
-def lihat_semua_resep():
-    Utils.clear_screen()
-    Utils.print_header("🌍 SEMUA RESEP")
-
-    resep_list = RecipeService.lihat_semua_resep()
-
-    if not resep_list:
-        Utils.print_warning("Belum ada resep.")
-        Utils.pause_and_back()
-        return
-
-    for i, r in enumerate(resep_list, start=1):
+def lihat_resep_semua(list_resep):
+    for i, r in enumerate(list_resep, start=1):
         bahan = ", ".join(r["bahan"]) if r["bahan"] else "Tidak ada bahan"
         print(f"""
 [{i}] -------------------------------
@@ -165,8 +157,55 @@ Deskripsi: {r['deskripsi']}
 Bahan    : {bahan}
 -----------------------------------
 """)
+        
+def lihat_semua_resep():
+    Utils.clear_screen()
+    Utils.print_header("🌍 SEMUA RESEP")
 
-    Utils.pause_and_back()
+    list_resep = RecipeService.lihat_semua_resep()
+
+    if not list_resep:
+        Utils.print_warning("Belum ada resep.")
+        Utils.pause_and_clear()
+        return
+    
+    while True:
+        Utils.print_header("🌍 SEMUA RESEP")
+        print("Pilih opsi tampilan:")
+        print("1. Tampilkan semua resep")
+        print("2. Cari Resep")
+        print("0. Kembali ke menu sebelumnya")
+
+        choice = input("\nPilihan Anda: ").strip()
+
+        if choice == "1":
+            Utils.print_header("📋 DAFTAR SEMUA RESEP")
+            lihat_resep_semua(list_resep)
+            Utils.pause_and_back()
+            continue
+        
+        elif choice == "2":
+            keyword = input("Cari (nama): ").strip().lower()
+            if keyword == "0":
+                return
+
+            hasil = [m for m in list_resep if keyword in m['nama_resep'].lower()]
+                    
+            if not hasil:
+                Utils.print_warning("Tidak ada resep yang sesuai dengan kata kunci.")
+            else:
+                Utils.clear_screen()
+                Utils.loading_animation()
+                Utils.print_header(f"🔍 HASIL PENCARIAN UNTUK '{keyword}'")
+                lihat_resep_semua(hasil)
+
+            Utils.pause_and_clear()
+            continue
+        
+        elif choice == "0":
+            return
+        else:
+            Utils.print_error("Pilihan tidak valid!")
 
 def update_resep():
     while True:
