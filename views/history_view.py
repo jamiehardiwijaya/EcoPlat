@@ -77,119 +77,152 @@ def history_menu():
 
 def lihat_semua_histori():
     """Menampilkan semua histori aktivitas"""
-    Utils.print_header("📋 Semua Histori Aktivitas")
-    
-    histori = HistoryService.lihat_histori()
-    
-    if not histori:
-        Utils.print_warning("Belum ada aktivitas yang tercatat.")
-    else:
-        print(f"📊 Total Aktivitas: {len(histori)}\n")
-        print("═" * 100)
-        print(f"{'No':<3} | {'Waktu':<19} | {'Aktivitas':<20} | {'Jumlah':<8} | {'Status':<30}")
-        print("═" * 100)
-        
-        for i, aktivitas in enumerate(histori, start=1):
-            waktu = aktivitas['timestamp'][:19] if 'timestamp' in aktivitas else aktivitas.get('timestamp', 'N/A')
-            status_icon = get_status_icon(aktivitas['status'])
-            status_desc = get_status_description(aktivitas['status'])
-            nama = aktivitas['nama']
-            if len(nama) > 18:
-                nama = nama[:15] + "..."
-            
-            print(f"{i:<3} | {waktu:<19} | {nama:<20} | "
-                  f"{aktivitas['jumlah']:<8} | {status_icon} {status_desc}")
-        
-        print("═" * 100)
-        
-        if len(histori) > 0:
-            print("\nℹ️  Masukkan nomor untuk melihat detail (0 untuk kembali)")
-            pilih = input("Pilihan: ").strip()
-            
-            if pilih.isdigit() and 1 <= int(pilih) <= len(histori):
-                tampilkan_detail_histori(histori[int(pilih) - 1])
-    
-    Utils.pause_and_back()
-
-def lihat_histori_periode():
-    """Menampilkan histori berdasarkan periode"""
-    Utils.print_header("📅 Histori Berdasarkan Periode")
-    
-    print("Pilih periode:")
-    print("1. Hari Ini")
-    print("2. Kemarin")
-    print("3. 7 Hari Terakhir")
-    print("4. 30 Hari Terakhir")
-    print("5. Custom Range")
-    print("6. Kembali")
-    
-    pilihan = input("\nPilih [1-6]: ").strip()
-    
-    if pilihan == "6":
-        return
-    
-    try:
-        today = datetime.now().date()
-        
-        if pilihan == "1":
-            start_date = end_date = today.strftime('%Y-%m-%d')
-            label = "Hari Ini"
-        elif pilihan == "2":
-            start_date = end_date = (today - timedelta(days=1)).strftime('%Y-%m-%d')
-            label = "Kemarin"
-        elif pilihan == "3":
-            start_date = (today - timedelta(days=6)).strftime('%Y-%m-%d')
-            end_date = today.strftime('%Y-%m-%d')
-            label = "7 Hari Terakhir"
-        elif pilihan == "4":
-            start_date = (today - timedelta(days=29)).strftime('%Y-%m-%d')
-            end_date = today.strftime('%Y-%m-%d')
-            label = "30 Hari Terakhir"
-        elif pilihan == "5":
-            print("\nFormat tanggal: YYYY-MM-DD")
-            start_date = input("Tanggal mulai: ").strip()
-            end_date = input("Tanggal selesai: ").strip()
-            
-            datetime.strptime(start_date, '%Y-%m-%d')
-            datetime.strptime(end_date, '%Y-%m-%d')
-            
-            label = f"{start_date} hingga {end_date}"
-        else:
-            Utils.print_error("Pilihan tidak valid!")
-            Utils.pause_and_back()
-            return
-        
-        Utils.loading_animation(1, f"Mengambil data {label}")
-        
-        histori = HistoryService.lihat_histori_periode(start_date, end_date)
+    while True:
+        Utils.print_header("📋 Semua Histori Aktivitas")
+        histori = HistoryService.lihat_histori()
         
         if not histori:
-            Utils.print_warning(f"Tidak ada aktivitas pada periode {label}")
+            Utils.print_warning("Belum ada aktivitas yang tercatat.")
         else:
-            Utils.print_success(f"Ditemukan {len(histori)} aktivitas pada periode {label}\n")
+            print(f"📊 Total Aktivitas: {len(histori)}\n")
+            print("═" * 100)
+            print(f"{'No':<3} | {'Waktu':<19} | {'Aktivitas':<20} | {'Jumlah':<8} | {'Status':<30}")
+            print("═" * 100)
             
-            print("═" * 80)
-            for i, aktivitas in enumerate(histori[:20], start=1):  
-                waktu = aktivitas['timestamp'][11:16]  
+            for i, aktivitas in enumerate(histori, start=1):
+                waktu = aktivitas['timestamp'][:19] if 'timestamp' in aktivitas else aktivitas.get('timestamp', 'N/A')
                 status_icon = get_status_icon(aktivitas['status'])
                 status_desc = get_status_description(aktivitas['status'])
+                nama = aktivitas['nama']
+                if len(nama) > 18:
+                    nama = nama[:15] + "..."
                 
-                print(f"{i:>2}. [{waktu}] {status_icon} {aktivitas['nama']} "
-                      f"({aktivitas['jumlah']} {aktivitas['jenis_makanan']})")
-                print(f"    Status: {status_desc}")
-                print()
+                print(f"{i:<3} | {waktu:<19} | {nama:<20} | "
+                    f"{aktivitas['jumlah']:<8} | {status_icon} {status_desc}")
             
-            if len(histori) > 20:
-                print(f"\n... dan {len(histori) - 20} aktivitas lainnya")
+            print("═" * 100)
             
-            print("═" * 80)
+            if len(histori) > 0:
+                print("\nℹ️  Masukkan nomor untuk melihat detail (0 untuk kembali)")
+                while True:
+                    pilih = input("Pilihan: ").strip()
+                    if pilih == "0":
+                        return
+                    if not pilih:
+                        Utils.print_error("Pilihan tidak boleh kosong")
+                        continue
+                    if pilih.isdigit() and 1 <= int(pilih) <= len(histori):
+                        tampilkan_detail_histori(histori[int(pilih) - 1])
+                        Utils.pause_and_clear()
+                    else:
+                        Utils.print_error("Pilihan tidak valid!")
+                        continue
+                    break
+
+def lihat_histori_periode():
+    while True:
+        """Menampilkan histori berdasarkan periode"""
+        Utils.print_header("📅 Histori Berdasarkan Periode")
+        
+        print("Pilih periode:")
+        print("1. Hari Ini")
+        print("2. Kemarin")
+        print("3. 7 Hari Terakhir")
+        print("4. 30 Hari Terakhir")
+        print("5. Custom Range")
+        print("6. Kembali")
+        pilihan = input("\nPilih [1-6]: ").strip()
             
-    except ValueError:
-        Utils.print_error("Format tanggal tidak valid! Gunakan format YYYY-MM-DD")
-    except Exception as e:
-        Utils.print_error(f"Terjadi kesalahan: {e}")
-    
-    Utils.pause_and_back()
+        if pilihan == "6":
+            return
+            
+        try:
+            today = datetime.now().date()
+                
+            if pilihan == "1":
+                start_date = end_date = today.strftime('%Y-%m-%d')
+                label = "Hari Ini"
+            elif pilihan == "2":
+                start_date = end_date = (today - timedelta(days=1)).strftime('%Y-%m-%d')
+                label = "Kemarin"
+            elif pilihan == "3":
+                start_date = (today - timedelta(days=6)).strftime('%Y-%m-%d')
+                end_date = today.strftime('%Y-%m-%d')
+                label = "7 Hari Terakhir"
+            elif pilihan == "4":
+                start_date = (today - timedelta(days=29)).strftime('%Y-%m-%d')
+                end_date = today.strftime('%Y-%m-%d')
+                label = "30 Hari Terakhir"
+            elif pilihan == "5":
+                print("\nFormat tanggal: YYYY-MM-DD")
+                while True:
+                    start_date = input("Tanggal mulai: ").strip()
+
+                    if start_date == "0":
+                        return
+                    if not start_date:
+                        Utils.print_error("Tanggal mulai tidak boleh kosong!")
+                        continue
+                    try:
+                        datetime.strptime(start_date, '%Y-%m-%d')
+                    except ValueError:
+                        Utils.print_error("Format tanggal salah! Gunakanan format YYYY-MM-DD. Contoh 2023-08-15")
+                        continue
+                    break
+
+                while True:
+                    end_date = input("Tanggal selesai: ").strip()
+
+                    if end_date == "0":
+                        return
+                    if not end_date:
+                        Utils.print_error("Tanggal selesai tidak boleh kosong!")
+                        continue
+                    try:
+                        datetime.strptime(end_date, '%Y-%m-%d')
+                    except ValueError:
+                        Utils.print_error("Format tanggal salah! Gunakanan format YYYY-MM-DD. Contoh 2023-08-15")
+                        continue
+                    break
+                    
+                label = f"{start_date} hingga {end_date}"
+            else:
+                Utils.print_error("Pilihan tidak valid!")
+                Utils.pause_and_back()
+                continue
+                
+            Utils.loading_animation(1, f"Mengambil data {label}")
+                
+            histori = HistoryService.lihat_histori_periode(start_date, end_date)
+                
+            if not histori:
+                Utils.print_warning(f"Tidak ada aktivitas pada periode {label}")
+            else:
+                Utils.print_success(f"Ditemukan {len(histori)} aktivitas pada periode {label}\n")
+                    
+                print("═" * 80)
+                for i, aktivitas in enumerate(histori[:20], start=1):  
+                    waktu = aktivitas['timestamp'][11:16]  
+                    status_icon = get_status_icon(aktivitas['status'])
+                    status_desc = get_status_description(aktivitas['status'])
+                        
+                    print(f"{i:>2}. [{waktu}] {status_icon} {aktivitas['nama']} "
+                        f"({aktivitas['jumlah']} {aktivitas['jenis_makanan']})")
+                    print(f"    Status: {status_desc}")
+                    print()
+                    
+                if len(histori) > 20:
+                    print(f"\n... dan {len(histori) - 20} aktivitas lainnya")
+                    
+                print("═" * 80)
+                    
+        except ValueError:
+            Utils.print_error("Format tanggal tidak valid! Gunakan format YYYY-MM-DD")
+        except Exception as e:
+            Utils.print_error(f"Terjadi kesalahan: {e}")
+            
+        Utils.pause_and_clear()
+        continue
 
 def lihat_makanan_terbuang():
     """Menampilkan makanan yang terbuang"""
@@ -330,15 +363,18 @@ def cari_histori():
             print("═" * 80)
         
         print("\n1. Cari lagi")
-        print("2. Kembali ke menu Histori")
+        print("0. Kembali ke menu Histori")
         
         pilihan = input("\nPilih [1-2]: ").strip()
         
-        if pilihan == "2":
+        if pilihan == "1":
+            continue
+        elif pilihan == "0":
             break
-        elif pilihan != "1":
+        else:
             Utils.print_error("Pilihan tidak valid!")
-            break
+            Utils.pause_and_clear()
+            continue
 
 def tampilkan_detail_histori(aktivitas):
     """Menampilkan detail lengkap sebuah histori"""
@@ -372,8 +408,6 @@ def tampilkan_detail_histori(aktivitas):
     if status_msg:
         print(f"\n💭 PESAN:")
         print(f"  {status_msg}")
-    
-    Utils.pause_and_back()
 
 def calculate_time_ago(timestamp):
     """Menghitung berapa lama yang lalu aktivitas terjadi"""

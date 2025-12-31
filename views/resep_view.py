@@ -67,12 +67,19 @@ def tambah_resep():
         bahan_input = input("Contoh: telur,bawang,cabai\n> ").strip()
         if bahan_input == "0":
             return
-
+        if not bahan_input:
+            Utils.print_error("Bahan resep tidak boleh kosong!")
+            continue
+        if "," not in bahan_input:
+            Utils.print_error("Pisahkan bahan dengan koma!")
+            continue
         daftar_bahan = [b.strip() for b in bahan_input.split(",") if b.strip()]
+        if len(daftar_bahan) != len(set(daftar_bahan)):
+            Utils.print_error("Bahan tidak boleh duplikat!")
+            continue
 
         if not daftar_bahan:
             Utils.print_error("Minimal satu bahan harus diisi!")
-            Utils.pause_and_back()
             continue
         break
 
@@ -357,6 +364,15 @@ def pulihkan_resep():
             idx = int(choice)
             if 1 <= idx <= len(deleted):
                 resep = deleted[idx - 1]
+
+                print(f"\nNama     : {resep['nama_resep']}")
+                print(f"Deskripsi: {resep['deskripsi']}")
+                print(f"Bahan    : {''.join(resep['bahan'])}")
+
+                    
+                print(f"\n💡 Informasi:")
+                print(f"• Resep akan dicatat di histori")
+                print(f"• Dapat dihapus kembali melalui menu '🗑️  Hapus Resep'")
 
                 if not Utils.confirm_action(
                     f"Pulihkan resep '{resep['nama_resep']}'?"
