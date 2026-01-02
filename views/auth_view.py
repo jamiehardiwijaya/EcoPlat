@@ -22,7 +22,6 @@ def show_auth_menu():
     elif choice == 2:
         handle_register()
     elif choice == 3:
-        print()
         if Utils.confirm_action("Yakin ingin keluar?"):
             print("\n👋 Terima kasih telah menggunakan EcoPlat!")
             exit()
@@ -52,7 +51,7 @@ def handle_login():
         email_exists = UserRepository.get_user_by_email(email)
         
         if email_exists:
-            Utils.print_success("Email terdaftar!\n")
+            Utils.print_success("Email terdaftar! Silakan masukkan password Anda.\n")
             break
         else:
             Utils.print_error("Email tidak terdaftar!\n")
@@ -69,9 +68,9 @@ def handle_login():
             Utils.print_error("Password tidak boleh kosong!\n")
             continue
         
-        if len(password) < 6:
-            Utils.print_error("Password minimal 6 karakter!\n")
-            continue
+        # if len(password) < 6:
+        #     Utils.print_error("Password minimal 6 karakter!\n")
+        #     continue
         
         if not UserRepository.verify_password(email, password):
             Utils.print_error("Password salah!")
@@ -220,6 +219,10 @@ def handle_register():
         
         if confirm_password == "0":
             return
+            
+        if not confirm_password:
+            Utils.print_error("Konfirmasi password tidak boleh kosong!\n")
+            continue
         
         if password != confirm_password:
             Utils.print_error("Password dan konfirmasi password tidak sesuai!\n")

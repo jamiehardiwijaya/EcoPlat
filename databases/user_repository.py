@@ -58,7 +58,21 @@ class UserRepository:
             WHERE email = ?
         """
         execute_query(query, (hashed_password, email))
-    
+        
+    @staticmethod
+    def update_password_by_id(user_id, new_plain_password):
+        hashed_password = bcrypt.hashpw(
+            new_plain_password.encode('utf-8'),
+            bcrypt.gensalt()
+        ).decode('utf-8')
+
+        query = """
+            UPDATE users
+            SET password = ?
+            WHERE id = ?
+        """
+        execute_query(query, (hashed_password, user_id))
+
     @staticmethod
     def get_user_by_id(user_id):
         query = "SELECT * FROM users WHERE id = ?"
@@ -68,3 +82,21 @@ class UserRepository:
     def get_user_by_email(email):
         query = "SELECT id FROM users WHERE email = ?"
         return fetch_one(query, (email,))
+        
+    @staticmethod
+    def update_user_name(user_id, new_name):
+        query = """
+            UPDATE users
+            SET nama = ?
+            WHERE id = ?
+        """
+        execute_query(query, (new_name, user_id))
+        
+    @staticmethod
+    def update_user_email(user_id, new_email):
+        query = """
+            UPDATE users
+            SET email = ?
+            WHERE id = ?
+        """
+        execute_query(query, (new_email, user_id))

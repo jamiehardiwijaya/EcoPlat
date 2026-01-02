@@ -24,4 +24,15 @@ class AppState:
     @classmethod
     def get_user_email(cls):
         return cls.current_user['email'] if cls.current_user else None
+        
+    @classmethod
+    def set_user_name(cls, new_name):
+        if cls.current_user:
+            cls.current_user['nama'] = new_name
+            
+    @classmethod
+    def set_user_email(cls, new_email):
+        if cls.current_user:
+            cls.current_user['email'] = new_email
+        
     
