@@ -211,3 +211,16 @@ class Utils:
         """Menampilkan pesan sapaan kepada pengguna yang telah login."""
         user_name = AppState.get_user_name() or "Guest"
         print(f"\nSelamat datang di EcoPlat, {user_name}! 🤩")
+
+    @staticmethod
+    def parse_jumlah(jumlah):
+        """
+        Mengubah jumlah (int / str bebas) menjadi integer aman untuk perhitungan.
+        """
+        if isinstance(jumlah, int):
+            return jumlah
+
+        if isinstance(jumlah, str):
+            angka = [int(x) for x in jumlah.split() if x.isdigit()]
+            return sum(angka)
+        return 0

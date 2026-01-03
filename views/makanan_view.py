@@ -153,6 +153,7 @@ def lihat_makanan():
         return
 
     while True:
+        Utils.print_header("📋 DAFTAR MAKANAN")
         print("Pilih opsi tampilan:")
         print("1. Tampilkan semua makanan")
         print("2. Cari Makanan")
@@ -186,8 +187,14 @@ def lihat_makanan():
         
         elif choice == "0":
             return
+        elif not choice:
+            Utils.print_error("Pilihan tidak boleh kosong!")
+            Utils.pause_and_clear()
+            continue
         else:
             Utils.print_error("Pilihan tidak valid!")
+            Utils.pause_and_clear()
+            continue
 
 def update_makanan():
     while True:

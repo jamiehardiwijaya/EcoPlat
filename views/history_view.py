@@ -294,7 +294,7 @@ def lihat_makanan_digunakan():
             print(f"\n📅 {hari}")
             print("-" * 40)
             
-            total_hari = sum(item['jumlah'] for item in items)
+            total_hari = sum(Utils.parse_jumlah(item['jumlah']) for item in items)
             print(f"Total item digunakan: {total_hari}")
             
             for item in items:
@@ -303,7 +303,7 @@ def lihat_makanan_digunakan():
                 print(f"  {status_icon} {item['nama']} ({item['jumlah']} {item['jenis_makanan']})")
                 print(f"    {status_desc}")
         
-        total_item = sum(item['jumlah'] for item in used_food)
+        total_item = sum(Utils.parse_jumlah(item['jumlah']) for item in used_food)
         print(f"\n📊 TOTAL SEMUA: {len(used_food)} aktivitas, {total_item} item")
         
         print(f"\n💡 REKOMENDASI:")

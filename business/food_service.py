@@ -12,22 +12,6 @@ class FoodService:
         if not user_id:
             return {"success": False, "message": "Anda belum login!"}
 
-        if not nama or not nama.strip():
-            return {"success": False, "message": "Nama makanan tidak boleh kosong!"}
-
-        if jumlah is None or str(jumlah).strip() == "":
-            return {"success": False, "message": "Jumlah makanan tidak boleh kosong!"}
-
-        try:
-            jumlah = int(jumlah)
-            if jumlah <= 0:
-                return {"success": False, "message": "Jumlah makanan harus lebih dari 0!"}
-        except ValueError:
-            return {"success": False, "message": "Jumlah makanan harus berupa angka!"}
-
-        if not kategori or not kategori.strip():
-            return {"success": False, "message": "Kategori makanan tidak boleh kosong!"}
-
         try:
             makanan_id = MakananRepository.tambah_makanan(
                 user_id,
@@ -48,7 +32,7 @@ class FoodService:
             return {"success": True, "message": "Makanan berhasil ditambahkan!"}
 
         except Exception as e:
-            return {"success": False, "message": f"Terjadi kesalahan: {e}"}
+            return {"success": False, "message": "Terjadi kesalahan! Silahkan coba lagi"}
 
     @staticmethod
     def lihat_makanan():

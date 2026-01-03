@@ -12,6 +12,7 @@ def show_auth_menu():
         "📝 Register",
         "❌ Keluar Aplikasi"
     ]
+# Ingin menambahkan hiasan bagus
 
     print("\nBuat akun atau login untuk mulai mengelola \nmakanan Anda dan mengurangi food waste! 💚")
     
@@ -33,7 +34,7 @@ def handle_login():
     print("Ketik 0 pada inputan apa saja untuk kembali ke menu sebelumnya.\n")
    
     while True:
-        email    = Utils.get_input   ("Email    :")
+        email    = Utils.get_input   ("Email    :").strip().lower()
         
         if email == "0":
             return
@@ -176,7 +177,7 @@ def handle_register():
         break
         
     while True:
-        email = Utils.get_input("Email \t\t:")
+        email = Utils.get_input("Email \t\t:").strip().lower()
         
         if email == "0":
             return
@@ -184,12 +185,27 @@ def handle_register():
         if not email:
             Utils.print_error("Email tidak boleh kosong!\n")
             continue 
-        
+
+        if " " in email :
+            Utils.print_error("Email tidak boleh mengandung spasi\n")
+            continue
+    
         if "@" not in email or "." not in email:
             Utils.print_error("Format email tidak valid!")
             print("Contoh format email: abc@gmail.com; xyz@upi.edu\n")
             continue
         
+        allowed = "abcdefghijklmnopqrstuvwxyz0123456789@."
+        for char in email:
+            if char not in allowed:
+                Utils.print_error("Email hanya boleh mengandung huruf dan angka!\n")
+                lanjut = True
+                break
+            else :
+                lanjut = False
+        if lanjut == True :
+            continue
+
         Utils.loading_animation(0.5, "Memeriksa email")
         email_exists = UserRepository.get_user_by_email(email)
         
@@ -209,6 +225,8 @@ def handle_register():
         if not password:
             Utils.print_error("Password tidak boleh kosong!\n")
             continue
+        if " " in password:
+            Utils.print_error("Password tidak boleh mengandung spasi\n")
         if len(password) < 6:
             Utils.print_error("Password minimal 6 karakter!\n")
             continue

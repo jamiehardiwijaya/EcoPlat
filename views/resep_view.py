@@ -150,8 +150,14 @@ def lihat_resep_saya():
         
         elif choice == "0":
             return
+        elif not choice:
+            Utils.print_error("Pilihan tidak boleh kosong!")
+            Utils.pause_and_clear()
+            continue
         else:
             Utils.print_error("Pilihan tidak valid!")
+            Utils.pause_and_clear()
+            continue
 
 def lihat_resep_semua(list_resep):
     for i, r in enumerate(list_resep, start=1):
@@ -211,8 +217,14 @@ def lihat_semua_resep():
         
         elif choice == "0":
             return
+        elif not choice:
+            Utils.print_error("Pilihan tidak boleh kosong!")
+            Utils.pause_and_clear()
+            continue
         else:
             Utils.print_error("Pilihan tidak valid!")
+            Utils.pause_and_clear()
+            continue
 
 def update_resep():
     while True:
