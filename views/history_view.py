@@ -3,9 +3,6 @@ from utils.helper import Utils
 from datetime import datetime, timedelta
 
 def get_status_icon(status):
-    """
-    Mengembalikan icon berdasarkan status aktivitas
-    """
     icon_map = {
         'ditambahkan': '➕',
         'dihapus': '🗑️',
@@ -24,9 +21,6 @@ def get_status_icon(status):
     return '📝'
 
 def get_status_description(status):
-    """
-    Mengembalikan penjelasan berdasarkan status
-    """
     descriptions = {
         'ditambahkan': 'Makanan ditambahkan ke inventaris',
         'dihapus': 'Makanan dihapus dari inventaris',
@@ -45,7 +39,6 @@ def get_status_description(status):
     return 'Aktivitas lainnya'
 
 def history_menu():
-    """Menu utama histori"""
     while True:
         Utils.print_header("📜 Histori Aktivitas", show_user=False)
         
@@ -76,7 +69,6 @@ def history_menu():
             Utils.print_error("Pilihan tidak valid!")
 
 def lihat_semua_histori():
-    """Menampilkan semua histori aktivitas"""
     while True:
         Utils.print_header("📋 Semua Histori Aktivitas")
         histori = HistoryService.lihat_histori()
@@ -121,7 +113,6 @@ def lihat_semua_histori():
 
 def lihat_histori_periode():
     while True:
-        """Menampilkan histori berdasarkan periode"""
         Utils.print_header("📅 Histori Berdasarkan Periode")
         
         print("Pilih periode:")
@@ -166,7 +157,7 @@ def lihat_histori_periode():
                     try:
                         datetime.strptime(start_date, '%Y-%m-%d')
                     except ValueError:
-                        Utils.print_error("Format tanggal salah! Gunakanan format YYYY-MM-DD. Contoh 2023-08-15")
+                        Utils.print_error("Format tanggal salah! Gunakan format YYYY-MM-DD. Contoh 2023-08-15")
                         continue
                     break
 
@@ -181,7 +172,7 @@ def lihat_histori_periode():
                     try:
                         datetime.strptime(end_date, '%Y-%m-%d')
                     except ValueError:
-                        Utils.print_error("Format tanggal salah! Gunakanan format YYYY-MM-DD. Contoh 2023-08-15")
+                        Utils.print_error("Format tanggal salah! Gunakan format YYYY-MM-DD. Contoh 2023-08-15")
                         continue
                     break
                     
@@ -197,35 +188,58 @@ def lihat_histori_periode():
                 
             if not histori:
                 Utils.print_warning(f"Tidak ada aktivitas pada periode {label}")
+                Utils.pause_and_clear()
+                continue
             else:
                 Utils.print_success(f"Ditemukan {len(histori)} aktivitas pada periode {label}\n")
                     
-                print("═" * 80)
-                for i, aktivitas in enumerate(histori[:20], start=1):  
-                    waktu = aktivitas['timestamp'][11:16]  
-                    status_icon = get_status_icon(aktivitas['status'])
-                    status_desc = get_status_description(aktivitas['status'])
+                while True:
+                    print("═" * 90)
+                    print(f"{'No':<3} | {'Waktu':<16} | {'Nama':<20} | {'Jumlah':<8} | {'Kategori':<12} | {'Status':<25}")
+                    print("═" * 90)
+                    
+                    for i, aktivitas in enumerate(histori, start=1):
+                        waktu = aktivitas['timestamp'][:16]
+                        status_icon = get_status_icon(aktivitas['status'])
+                        status_desc = get_status_description(aktivitas['status'])
                         
-                    print(f"{i:>2}. [{waktu}] {status_icon} {aktivitas['nama']} "
-                        f"({aktivitas['jumlah']} {aktivitas['jenis_makanan']})")
-                    print(f"    Status: {status_desc}")
-                    print()
+                        nama = aktivitas['nama']
+                        if len(nama) > 18:
+                            nama = nama[:15] + "..."
+                        
+                        status_display = f"{status_icon} {status_desc[:20]}"
+                        
+                        print(f"{i:<3} | {waktu:<16} | {nama:<20} | "
+                            f"{aktivitas['jumlah']:<8} | {aktivitas['jenis_makanan'][:10]:<12} | {status_display:<25}")
                     
-                if len(histori) > 20:
-                    print(f"\n... dan {len(histori) - 20} aktivitas lainnya")
+                    print("═" * 90)
                     
-                print("═" * 80)
+                    print("\nℹ️  Masukkan nomor untuk melihat detail (0 untuk kembali ke menu periode)")
+                    pilih = input("Pilihan: ").strip()
+                    
+                    if pilih == "0":
+                        break
+                    elif not pilih:
+                        Utils.print_error("Pilihan tidak boleh kosong")
+                        Utils.pause_and_clear(1)
+                        continue
+                    elif pilih.isdigit() and 1 <= int(pilih) <= len(histori):
+                        tampilkan_detail_histori(histori[int(pilih) - 1])
+                        Utils.pause_and_clear(2)
+                        continue
+                    else:
+                        Utils.print_error("Pilihan tidak valid!")
+                        Utils.pause_and_clear(1)
+                        continue
                     
         except ValueError:
             Utils.print_error("Format tanggal tidak valid! Gunakan format YYYY-MM-DD")
+            Utils.pause_and_clear()
         except Exception as e:
             Utils.print_error(f"Terjadi kesalahan: {e}")
-            
-        Utils.pause_and_clear()
-        continue
+            Utils.pause_and_clear()
 
 def lihat_makanan_terbuang():
-    """Menampilkan makanan yang terbuang"""
     Utils.print_header("🗑️ Makanan yang Terbuang")
     
     wasted_food = HistoryService.get_wasted_food_report()
@@ -258,7 +272,6 @@ def lihat_makanan_terbuang():
     Utils.pause_and_back()
 
 def lihat_makanan_digunakan():
-    """Menampilkan makanan yang digunakan"""
     Utils.print_header("🍳 Makanan yang Digunakan")
     
     histori = HistoryService.lihat_histori()
@@ -313,7 +326,6 @@ def lihat_makanan_digunakan():
     Utils.pause_and_back()
 
 def cari_histori():
-    """Mencari histori berdasarkan keyword dengan loop berulang"""
     while True:
         Utils.print_header("🔎 Cari Histori")
         print("Ketik 0 untuk kembali ke menu sebelumnya.\n")
@@ -338,46 +350,68 @@ def cari_histori():
         
         if not results:
             Utils.print_warning(f"Tidak ditemukan hasil untuk '{keyword}'")
-        else:
-            Utils.print_success(f"Ditemukan {len(results)} hasil untuk '{keyword}'\n")
+            Utils.pause_and_clear()
+            continue
+        
+        Utils.print_success(f"Ditemukan {len(results)} hasil untuk '{keyword}'\n")
+        
+        while True:
+            print("═" * 90)
+            print(f"{'No':<3} | {'Waktu':<16} | {'Nama':<20} | {'Jumlah':<8} | {'Kategori':<12} | {'Status':<25}")
+            print("═" * 90)
             
-            print("═" * 80)
-            for i, result in enumerate(results[:15], start=1): 
+            for i, result in enumerate(results, start=1):
                 waktu = result['timestamp'][:16]
                 status_icon = get_status_icon(result['status'])
                 status_desc = get_status_description(result['status'])
                 
                 nama = result['nama']
-                if keyword.lower() in nama.lower():
-                    print(f"{i:>2}. [{waktu}] {status_icon} {nama}")
-                else:
-                    print(f"{i:>2}. [{waktu}] {status_icon} {nama}")
+                if len(nama) > 18:
+                    nama = nama[:15] + "..."
                 
-                print(f"    Status: {status_desc}")
-                print(f"    Jumlah: {result['jumlah']} | Kategori: {result['jenis_makanan']}")
-                print()
+                status_display = f"{status_icon} {status_desc[:20]}"
+                
+                print(f"{i:<3} | {waktu:<16} | {nama:<20} | "
+                    f"{result['jumlah']:<8} | {result['jenis_makanan'][:10]:<12} | {status_display:<25}")
             
-            if len(results) > 15:
-                print(f"... dan {len(results) - 15} hasil lainnya")
+            if len(results) > 20:
+                print(f"... dan {len(results) - 20} hasil lainnya")
             
-            print("═" * 80)
-        
-        print("\n1. Cari lagi")
-        print("0. Kembali ke menu Histori")
-        
-        pilihan = input("\nPilih [1-2]: ").strip()
-        
-        if pilihan == "1":
-            continue
-        elif pilihan == "0":
-            break
-        else:
-            Utils.print_error("Pilihan tidak valid!")
-            Utils.pause_and_clear()
-            continue
+            print("═" * 90)
+            
+            print("\nℹ️  Pilihan:")
+            print("1. Lihat detail histori (masukkan nomor)")
+            print("2. Cari lagi")
+            print("0. Kembali ke menu Histori")
+            
+            pilihan = input("\nPilih [1/2/0] atau masukkan nomor histori: ").strip()
+            
+            if pilihan == "0":
+                return
+            elif pilihan == "1" or pilihan.isdigit() and 1 <= int(pilihan) <= len(results):
+                if pilihan == "1":
+                    while True:
+                        nomor = input("Masukkan nomor histori: ").strip()
+                        if nomor.isdigit() and 1 <= int(nomor) <= len(results):
+                            tampilkan_detail_histori(results[int(nomor) - 1])
+                            Utils.pause_and_clear(2)
+                            break
+                        elif nomor == "0":
+                            break
+                        else:
+                            Utils.print_error("Nomor tidak valid!")
+                else:
+                    tampilkan_detail_histori(results[int(pilihan) - 1])
+                    Utils.pause_and_clear(2)
+                continue
+            elif pilihan == "2":
+                break
+            else:
+                Utils.print_error("Pilihan tidak valid!")
+                Utils.pause_and_clear(1)
+                continue
 
 def tampilkan_detail_histori(aktivitas):
-    """Menampilkan detail lengkap sebuah histori"""
     Utils.print_header("📄 Detail Histori")
     
     print(f"\n📋 INFORMASI AKTIVITAS")
@@ -410,7 +444,6 @@ def tampilkan_detail_histori(aktivitas):
         print(f"  {status_msg}")
 
 def calculate_time_ago(timestamp):
-    """Menghitung berapa lama yang lalu aktivitas terjadi"""
     now = datetime.now()
     diff = now - timestamp
     
@@ -432,7 +465,6 @@ def calculate_time_ago(timestamp):
         return f"{diff.seconds} detik yang lalu"
 
 def get_status_message(status):
-    """Mengembalikan pesan berdasarkan status"""
     messages = {
         'ditambahkan': 'Makanan baru ditambahkan ke inventaris.',
         'dihapus': 'Makanan dihapus dari inventaris.',
