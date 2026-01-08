@@ -5,6 +5,7 @@ from databases.makanan_repository import MakananRepository
 from databases.history_repository import HistoryRepository
 from business.history_service import HistoryService
 from state import AppState
+from utils.helper import Utils
 
 class RecoveryService:
     CSV_PATH = "deleted_foods.csv"
@@ -44,6 +45,7 @@ class RecoveryService:
             }
             
             df = pd.read_csv(RecoveryService.CSV_PATH)
+            df = Utils._normalize_types(df)
             
 
             existing_mask = (df['id'] == makanan['id']) & (df['is_recovered'] == 0) & (df['user_id'] == user_id)
@@ -67,6 +69,7 @@ class RecoveryService:
             RecoveryService._ensure_csv_exists()
             
             df = pd.read_csv(RecoveryService.CSV_PATH)
+            df = Utils._normalize_types(df)
             
             if df.empty:
                 return []
@@ -95,6 +98,7 @@ class RecoveryService:
             RecoveryService._ensure_csv_exists()
             
             df = pd.read_csv(RecoveryService.CSV_PATH)
+            df = Utils._normalize_types(df)
  
             mask = (df['id'] == deleted_food_id) & (df['is_recovered'] == 0)
             
@@ -158,6 +162,7 @@ class RecoveryService:
             RecoveryService._ensure_csv_exists()
             
             df = pd.read_csv(RecoveryService.CSV_PATH)
+            df = Utils._normalize_types(df)
             
             initial_count = len(df)
             df = df[df['id'] != deleted_food_id]
@@ -178,6 +183,7 @@ class RecoveryService:
             RecoveryService._ensure_csv_exists()
             
             df = pd.read_csv(RecoveryService.CSV_PATH)
+            df = Utils._normalize_types(df)
             
             if df.empty:
                 return {"success": True, "deleted_count": 0}
@@ -208,6 +214,7 @@ class RecoveryService:
             RecoveryService._ensure_csv_exists()
             
             df = pd.read_csv(RecoveryService.CSV_PATH)
+            df = Utils._normalize_types(df)
             
             if df.empty:
                 return {

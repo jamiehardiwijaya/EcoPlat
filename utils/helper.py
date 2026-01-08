@@ -224,3 +224,16 @@ class Utils:
             angka = [int(x) for x in jumlah.split() if x.isdigit()]
             return sum(angka)
         return 0
+    
+    @staticmethod
+    def _normalize_types(df):
+        df['id'] = df['id'].astype('Int64')
+        df['user_id'] = df['user_id'].astype('Int64')
+        df['jumlah'] = df['jumlah'].astype('Int64')
+        df['is_recovered'] = df['is_recovered'].astype('Int64')
+
+        df['recovered_at'] = df['recovered_at'].astype(str)
+        df['deleted_at'] = df['deleted_at'].astype(str)
+        df['tanggal_kadaluarsa'] = df['tanggal_kadaluarsa'].astype(str)
+        return df
+
