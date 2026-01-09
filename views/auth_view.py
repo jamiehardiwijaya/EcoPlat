@@ -12,7 +12,6 @@ def show_auth_menu():
         "📝 Register",
         "❌ Keluar Aplikasi"
     ]
-# Ingin menambahkan hiasan bagus
 
     print("\nBuat akun atau login untuk mulai mengelola \nmakanan Anda dan mengurangi food waste! 💚")
     

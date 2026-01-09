@@ -77,7 +77,6 @@ class HistoryRepository:
     
     @staticmethod
     def get_today_history(user_id):
-        """Mendapatkan histori hari ini"""
         today = datetime.now().strftime('%Y-%m-%d')
         query = """
             SELECT * FROM user_history 
@@ -89,7 +88,6 @@ class HistoryRepository:
     
     @staticmethod
     def get_yesterday_history(user_id):
-        """Mendapatkan histori kemarin"""
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
         query = """
             SELECT * FROM user_history 
@@ -101,7 +99,6 @@ class HistoryRepository:
     
     @staticmethod
     def get_history_by_status(user_id, status):
-        """Mendapatkan histori berdasarkan status tertentu"""
         query = """
             SELECT * FROM user_history 
             WHERE user_id = ? AND status = ?
@@ -111,7 +108,6 @@ class HistoryRepository:
     
     @staticmethod
     def get_wasted_food_history(user_id):
-        """Mendapatkan histori makanan yang terbuang"""
         query = """
             SELECT * FROM user_history 
             WHERE user_id = ? AND status = 'terbuang'
@@ -121,7 +117,6 @@ class HistoryRepository:
     
     @staticmethod
     def get_food_usage_history(user_id):
-        """Mendapatkan histori makanan yang digunakan"""
         query = """
             SELECT * FROM user_history 
             WHERE user_id = ? AND (status = 'digunakan' OR status = 'dikonsumsi')
@@ -131,7 +126,6 @@ class HistoryRepository:
     
     @staticmethod
     def get_monthly_summary(user_id, year_month):
-        """Mendapatkan ringkasan bulanan"""
         query = """
             SELECT 
                 DATE(timestamp) as tanggal,
@@ -148,7 +142,6 @@ class HistoryRepository:
     
     @staticmethod
     def search_history(user_id, keyword):
-        """Mencari histori berdasarkan keyword"""
         query = """
             SELECT * FROM user_history 
             WHERE user_id = ? 

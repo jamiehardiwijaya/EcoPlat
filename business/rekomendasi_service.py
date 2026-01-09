@@ -25,15 +25,12 @@ class RecommendationService:
                 cocok = False
 
                 for kata in kata_makanan:
-                    # Abaikan kata pendek & kata umum
                     if len(kata) < 4:
                         continue
 
-                    # 1. HARUS kata utuh
                     if kata == nama_bahan:
                         cocok = True
 
-                    # 2. ATAU prefix JELAS (lasag -> lasagna)
                     elif nama_bahan.startswith(kata):
                         cocok = True
 

@@ -7,7 +7,6 @@ class HistoryService:
     
     @staticmethod
     def record_food_addition(makanan_id, nama, jumlah, kategori, tanggal_kadaluarsa):
-        """Mencatat penambahan makanan ke histori"""
         user_id = AppState.get_user_id()
         if not user_id:
             return {"success": False, "message": "User tidak login"}
@@ -28,7 +27,6 @@ class HistoryService:
     
     @staticmethod
     def record_food_deletion(makanan_id, alasan="dihapus"):
-        """Mencatat penghapusan makanan ke histori dengan status yang sesuai"""
         user_id = AppState.get_user_id()
         if not user_id:
             return {"success": False, "message": "User tidak login"}
@@ -63,27 +61,22 @@ class HistoryService:
     
     @staticmethod
     def record_food_expired(makanan_id):
-        """Mencatat makanan kadaluarsa ke histori"""
         return HistoryService.record_food_deletion(makanan_id, "terbuang")
     
     @staticmethod
     def record_food_used(makanan_id):
-        """Mencatat makanan digunakan/dimasak ke histori"""
         return HistoryService.record_food_deletion(makanan_id, "digunakan")
     
     @staticmethod
     def record_food_consumed(makanan_id):
-        """Mencatat makanan dikonsumsi ke histori"""
         return HistoryService.record_food_deletion(makanan_id, "digunakan")
     
     @staticmethod
     def record_food_wasted(makanan_id):
-        """Mencatat makanan terbuang ke histori"""
         return HistoryService.record_food_deletion(makanan_id, "terbuang")
     
     @staticmethod
     def record_food_update(makanan_id, perubahan):
-        """Mencatat perubahan/update makanan"""
         user_id = AppState.get_user_id()
         if not user_id:
             return {"success": False, "message": "User tidak login"}
@@ -108,7 +101,6 @@ class HistoryService:
     
     @staticmethod
     def lihat_histori(limit=None):
-        """Melihat histori aktivitas"""
         user_id = AppState.get_user_id()
         if not user_id:
             return []
@@ -119,7 +111,6 @@ class HistoryService:
     
     @staticmethod
     def lihat_histori_periode(start_date, end_date):
-        """Melihat histori berdasarkan periode"""
         user_id = AppState.get_user_id()
         if not user_id:
             return []
@@ -128,7 +119,6 @@ class HistoryService:
     
     @staticmethod
     def get_statistik_histori():
-        """Mendapatkan statistik histori"""
         user_id = AppState.get_user_id()
         if not user_id:
             return {}
@@ -192,7 +182,6 @@ class HistoryService:
     
     @staticmethod
     def get_wasted_food_report():
-        """Mendapatkan laporan makanan terbuang"""
         user_id = AppState.get_user_id()
         if not user_id:
             return []
@@ -201,7 +190,7 @@ class HistoryService:
     
     @staticmethod
     def get_monthly_summary(year_month=None):
-        """Mendapatkan ringkasan bulanan"""
+
         user_id = AppState.get_user_id()
         if not user_id:
             return {}
@@ -213,7 +202,6 @@ class HistoryService:
     
     @staticmethod
     def search_history(keyword):
-        """Mencari histori berdasarkan keyword"""
         user_id = AppState.get_user_id()
         if not user_id:
             return []

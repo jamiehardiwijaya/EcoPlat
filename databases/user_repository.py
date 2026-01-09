@@ -4,7 +4,6 @@ from databases.db import execute_query, fetch_all, fetch_one
 class UserRepository:
     @staticmethod
     def add_user(nama, email, plain_password):
-        # Hash password sebelum disimpan
         hashed_password = bcrypt.hashpw(
             plain_password.encode('utf-8'), 
             bcrypt.gensalt()
@@ -14,7 +13,6 @@ class UserRepository:
             INSERT INTO users (nama, email, password)
             VALUES (?, ?, ?)
         """
-        # execute_query harus mengembalikan lastrowid
         return execute_query(query, (nama, email, hashed_password))
     
     @staticmethod

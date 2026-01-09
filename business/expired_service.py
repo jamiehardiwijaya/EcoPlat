@@ -7,7 +7,6 @@ class ExpirationService:
     
     @staticmethod
     def check_expired_foods(record_to_history=True):
-        """Memeriksa dan menandai makanan yang sudah kadaluarsa"""
         user_id = AppState.get_user_id()
         if not user_id:
             return []
@@ -25,7 +24,6 @@ class ExpirationService:
                 exp_date = datetime.strptime(makanan['tanggal_kadaluarsa'], '%Y-%m-%d').date()
                 
                 if exp_date < today:
-                    # Makanan sudah kadaluarsa dan belum dihapus → dicatat sebagai terbuang
                     if record_to_history:
                         HistoryService.record_food_wasted(makanan['id'])
                     
@@ -44,7 +42,6 @@ class ExpirationService:
     
     @staticmethod
     def get_almost_expired_foods(days_threshold=3):
-        """Mendapatkan makanan yang hampir kadaluarsa"""
         user_id = AppState.get_user_id()
         if not user_id:
             return []

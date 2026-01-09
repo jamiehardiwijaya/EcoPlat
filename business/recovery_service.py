@@ -24,7 +24,6 @@ class RecoveryService:
     
     @staticmethod
     def record_deleted_food(makanan, history_id, status_deletion="dihapus"):
-        """Mencatat makanan yang dihapus ke CSV"""
         try:
             RecoveryService._ensure_csv_exists()
             
@@ -64,7 +63,6 @@ class RecoveryService:
     
     @staticmethod
     def get_deleted_foods(user_id=None):
-        """Mendapatkan daftar makanan yang dihapus dan belum dipulihkan"""
         try:
             RecoveryService._ensure_csv_exists()
             
@@ -93,7 +91,6 @@ class RecoveryService:
     
     @staticmethod
     def recover_food(deleted_food_id):
-        """Memulihkan makanan yang telah dihapus"""
         try:
             RecoveryService._ensure_csv_exists()
             
@@ -157,7 +154,6 @@ class RecoveryService:
     
     @staticmethod
     def permanently_delete_from_csv(deleted_food_id):
-        """Menghapus permanen record dari CSV (tidak bisa dipulihkan lagi)"""
         try:
             RecoveryService._ensure_csv_exists()
             
@@ -178,7 +174,6 @@ class RecoveryService:
     
     @staticmethod
     def cleanup_old_records(days=30):
-        """Membersihkan record yang sudah lama (lebih dari X hari)"""
         try:
             RecoveryService._ensure_csv_exists()
             
@@ -209,7 +204,6 @@ class RecoveryService:
     
     @staticmethod
     def get_waste_reduction_stats():
-        """Mendapatkan statistik pengurangan food waste melalui pemulihan"""
         try:
             RecoveryService._ensure_csv_exists()
             
