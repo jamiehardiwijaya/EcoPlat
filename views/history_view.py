@@ -194,6 +194,7 @@ def lihat_histori_periode():
                 Utils.print_success(f"Ditemukan {len(histori)} aktivitas pada periode {label}\n")
                     
                 while True:
+                    Utils.print_header(f"📅 Histori Berdasarkan Periode {label}\n")
                     print("═" * 90)
                     print(f"{'No':<3} | {'Waktu':<16} | {'Nama':<20} | {'Jumlah':<8} | {'Kategori':<12} | {'Status':<25}")
                     print("═" * 90)
@@ -221,15 +222,15 @@ def lihat_histori_periode():
                         break
                     elif not pilih:
                         Utils.print_error("Pilihan tidak boleh kosong")
-                        Utils.pause_and_clear(1)
+                        Utils.pause_and_clear()
                         continue
                     elif pilih.isdigit() and 1 <= int(pilih) <= len(histori):
                         tampilkan_detail_histori(histori[int(pilih) - 1])
-                        Utils.pause_and_clear(2)
+                        Utils.pause_and_clear()
                         continue
                     else:
                         Utils.print_error("Pilihan tidak valid!")
-                        Utils.pause_and_clear(1)
+                        Utils.pause_and_clear()
                         continue
                     
         except ValueError:
@@ -339,6 +340,7 @@ def cari_histori():
         
         if not keyword:
             Utils.print_error("Kata kunci tidak boleh kosong!")
+            Utils.pause_and_back()
             continue
         
         if keyword.lower() in ['kembali', 'batal', 'exit', 'keluar']:
@@ -356,6 +358,7 @@ def cari_histori():
         Utils.print_success(f"Ditemukan {len(results)} hasil untuk '{keyword}'\n")
         
         while True:
+            Utils.print_header(f"📅 Histori Berdasarkan Keyword : {keyword}\n")
             print("═" * 90)
             print(f"{'No':<3} | {'Waktu':<16} | {'Nama':<20} | {'Jumlah':<8} | {'Kategori':<12} | {'Status':<25}")
             print("═" * 90)
@@ -388,27 +391,26 @@ def cari_histori():
             
             if pilihan == "0":
                 return
-            elif pilihan == "1" or pilihan.isdigit() and 1 <= int(pilihan) <= len(results):
-                if pilihan == "1":
-                    while True:
-                        nomor = input("Masukkan nomor histori: ").strip()
-                        if nomor.isdigit() and 1 <= int(nomor) <= len(results):
-                            tampilkan_detail_histori(results[int(nomor) - 1])
-                            Utils.pause_and_clear(2)
-                            break
-                        elif nomor == "0":
-                            break
-                        else:
-                            Utils.print_error("Nomor tidak valid!")
+            elif pilihan == "1" :
+                while True:
+                    nomor = input("Masukkan nomor histori: ").strip()
+                    if nomor.isdigit() and 1 <= int(nomor) <= len(results):
+                        tampilkan_detail_histori(results[int(nomor) - 1])
+                        Utils.pause_and_clear()
+                        break
+                    elif nomor == "0":
+                        break
+                    else:
+                        Utils.print_error("Nomor tidak valid!")
                 else:
                     tampilkan_detail_histori(results[int(pilihan) - 1])
-                    Utils.pause_and_clear(2)
+                    Utils.pause_and_clear()
                 continue
             elif pilihan == "2":
                 break
             else:
                 Utils.print_error("Pilihan tidak valid!")
-                Utils.pause_and_clear(1)
+                Utils.pause_and_clear()
                 continue
 
 def tampilkan_detail_histori(aktivitas):
