@@ -18,37 +18,27 @@ class RecommendationService:
         sudah_ada = set()
 
         for makanan in makanan_user:
-            nama_makanan = makanan["nama_makanan"].lower()
+            kata_makanan = makanan["nama_makanan"].lower().split()
 
             for bahan in semua_bahan:
                 nama_bahan = bahan["nama"].lower()
-
                 cocok = False
 
-                # 1. substring langsung
-                if nama_bahan in nama_makanan or nama_makanan in nama_bahan:
-                    cocok = True
+                for kata in kata_makanan:
+                    # Abaikan kata pendek & kata umum
+                    if len(kata) < 4:
+                        continue
 
-                # 2. prefix match (lasag ~ lasagna)
-                if not cocok:
-                    sama = 0
-                    batas = min(len(nama_bahan), len(nama_makanan))
-                    for i in range(batas):
-                        if nama_bahan[i] == nama_makanan[i]:
-                            sama += 1
-                        else:
-                            break
-                    if sama >= 3:
+                    # 1. HARUS kata utuh
+                    if kata == nama_bahan:
                         cocok = True
 
-                # 3. overlap huruf
-                if not cocok:
-                    huruf_sama = 0
-                    for h in set(nama_bahan):
-                        if h in nama_makanan:
-                            huruf_sama += 1
-                    if huruf_sama / max(len(set(nama_bahan)), 1) >= 0.6:
+                    # 2. ATAU prefix JELAS (lasag -> lasagna)
+                    elif nama_bahan.startswith(kata):
                         cocok = True
+
+                    if cocok:
+                        break
 
                 if not cocok:
                     continue

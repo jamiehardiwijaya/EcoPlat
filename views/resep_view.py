@@ -70,9 +70,6 @@ def tambah_resep():
         if not bahan_input:
             Utils.print_error("Bahan resep tidak boleh kosong!")
             continue
-        if "," not in bahan_input:
-            Utils.print_error("Pisahkan bahan dengan koma!")
-            continue
         daftar_bahan = [b.strip() for b in bahan_input.split(",") if b.strip()]
         if len(daftar_bahan) != len(set(daftar_bahan)):
             Utils.print_error("Bahan tidak boleh duplikat!")
